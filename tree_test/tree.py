@@ -36,11 +36,18 @@ def default_dir():
         os.makedirs(os.path.join(p, d), exist_ok=True)
 
 
-def get_info():
+def get_shot():
     wb = openpyxl.load_workbook('/home/west/test/show/goguma/production/excel/230517.xlsx')
     sheet = wb['Shot']
-    a = sheet['A']
-    print(a)
+    for i in range(2, len(sheet['A'])):
+        print(sheet.cell(row=i, column=1).value)
+
+
+def get_seq():
+    wb = openpyxl.load_workbook('/home/west/test/show/goguma/production/excel/230517.xlsx')
+    sheet = wb['Shot']
+    for i in range(2, len(sheet['B'])):
+        print(sheet.cell(row=i, column=2).value)
 
 # def main():
 #     # Create directory
@@ -67,6 +74,7 @@ if __name__ == '__main__':
     # main()
     # create_project()
     # default_dir()
-    get_info()
+    get_shot()
+    get_seq()
 
 
