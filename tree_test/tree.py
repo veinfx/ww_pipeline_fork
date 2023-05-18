@@ -14,7 +14,7 @@ import openpyxl
 
 main_dir = '/home/west/test/show'
 root_dir = 'goguma' #project name(code)
-main_dir_names = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']  # Name of the sub-directories
+# main_dir_names = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']  # Name of the sub-directories
 
 
 def create_project():
@@ -47,7 +47,29 @@ def get_seq():
     wb = openpyxl.load_workbook('/home/west/test/show/goguma/production/excel/230517.xlsx')
     sheet = wb['Shot']
     for i in range(2, len(sheet['B'])):
-        print(sheet.cell(row=i, column=2).value)
+        a = sheet.cell(row=i, column=2).value
+        # os.makedirs(os.path.join())
+
+
+def create_plate_dir():
+    path = os.path.join(main_dir, root_dir)
+    default_directory = ['org', 'jpg', 'mp4']
+    for d in default_directory:
+        os.makedirs(os.path.join(path, d), exist_ok=True)
+
+
+def find_dir():
+    entries = os.listdir(main_dir)
+    print(entries)
+
+
+
+
+
+
+
+
+
 
 # def main():
 #     # Create directory
@@ -74,7 +96,7 @@ if __name__ == '__main__':
     # main()
     # create_project()
     # default_dir()
-    get_shot()
-    get_seq()
-
+    # get_shot()
+    # get_seq()
+    find_dir()
 
