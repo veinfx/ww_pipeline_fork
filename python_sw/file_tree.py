@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import os
+import sys
 
 import shotgun_api3
 import PySide2
@@ -16,9 +18,31 @@ sg = shotgun_api3.Shotgun(SERVER_PATH,
 #
 # project = sg.create("Project", project_data)
 
-usr_project_name = "SW_Project_test_3"
-project_data = {"name": usr_project_name, "sg_description": "This is a new project."}
-usr_shot_name = "SH003"
+usr_project_name = "project_tank-2"
+usr_seq_name = f"{usr_project_name}_S010"
+usr_shot_name = f"{usr_seq_name}_0010"
+
+project_data = {"name": usr_project_name, "sg_description": "This is a new project. tank_name test",
+                "sg_status": "Active", "tank_name" : "sw_project_test_2"}
+
+
+project_path = f"/show/{usr_project_name}"
+# os.mkdir(project_path)
+
+defult_dir_list = ['asset', 'seq', 'production/scan','production/excel', 'temp']
+
+
+def make_dirs():
+    for item in defult_dir_list:
+        print(project_path + "/" + item)
+        if os.path.exists(item):
+            print("dir_path exists", item)
+            pass
+        else:
+            os.makedirs(project_path + "/" + item)
+            print("created dir_path", item)
+        pass
+        # os.makedirs(project_path + "/" + item)
 
 def create_project():
     # project_data = {"name": usr_project_name, "sg_description": "This is a new project."}
@@ -28,9 +52,26 @@ def create_project():
 
 
 def create_shot():
-    shot_data = {"code": "test", "Project": ["name", "is", usr_project_name]}
-    shot = sg.create("Asset", shot_data)
-    print(shot)
+    project_dict = sg.find_one("Project", [["name", "is", usr_project_name]], ["id"])
+    print(project_dict)
+    seq_data = {
+        "project":project_dict,
+        "code": usr_seq_name
+    }
+
+    seq_dict = sg.create("Sequence", seq_data)
+
+    shot_data = {
+        "project": project_dict,
+        "code": usr_shot_name,
+        "sg_sequence" : seq_dict
+    }
+
+    # shot_data = {"code": usr_shot_name, "sg_sequence" : usr_seq_name, "Project": ["name", "is", usr_project_name]}
+    shot_dict = sg.create("Shot", shot_data)
+    print(shot_dict)
+
+
 
 
 def get_all_project():
@@ -39,13 +80,34 @@ def get_all_project():
     for project in projects:
         return sorted(list(set([project["name"] for project in projects])))
 
-
+create_project()
+create_shot()
 a = get_all_project()
-print(a)
+# print(a)
+
+
+# @staticmethod
+def create_defult_dir(dir_path):
+
+    if os.path.exists(dir_path):
+        print("dir_path exists", dir_path)
+        pass
+    else:
+        os.makedirs(dir_path)
+        print("created dir_path", dir_path)
+    pass
+
+# create_defult_dir(dir_path)
+
+
+
+#*------Used method
+'''
 
 """ if project already exist error """
 if usr_project_name not in a:
     create_project()
+    create_defult_dir()
 
 else:
     print("{} : Project already exist".format(usr_project_name))
@@ -67,7 +129,7 @@ shot_filters = [
 get_all_shot = sg.find("Shot", shot_filters, ["id", "code"])
 print(get_all_shot)
 
-
+'''
 
 
 
