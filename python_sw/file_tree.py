@@ -18,15 +18,15 @@ sg = shotgun_api3.Shotgun(SERVER_PATH,
 #
 # project = sg.create("Project", project_data)
 
-usr_project_name = "project_tank-2"
-usr_seq_name = f"{usr_project_name}_S010"
-usr_shot_name = f"{usr_seq_name}_0010"
+user_project_name = "project_tank-2"
+user_seq_name = f"{user_project_name}_S010"
+user_shot_name = f"{user_seq_name}_0010"
 
-project_data = {"name": usr_project_name, "sg_description": "This is a new project. tank_name test",
+project_data = {"name": user_project_name, "sg_description": "This is a new project. tank_name test",
                 "sg_status": "Active", "tank_name" : "sw_project_test_2"}
 
 
-project_path = f"/show/{usr_project_name}"
+project_path = f"/show/{user_project_name}"
 # os.mkdir(project_path)
 
 defult_dir_list = ['asset', 'seq', 'production/scan','production/excel', 'temp']
@@ -52,18 +52,18 @@ def create_project():
 
 
 def create_shot():
-    project_dict = sg.find_one("Project", [["name", "is", usr_project_name]], ["id"])
+    project_dict = sg.find_one("Project", [["name", "is", user_project_name]], ["id"])
     print(project_dict)
     seq_data = {
         "project":project_dict,
-        "code": usr_seq_name
+        "code": user_seq_name
     }
 
     seq_dict = sg.create("Sequence", seq_data)
 
     shot_data = {
         "project": project_dict,
-        "code": usr_shot_name,
+        "code": user_shot_name,
         "sg_sequence" : seq_dict
     }
 
