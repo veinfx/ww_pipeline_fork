@@ -5,9 +5,9 @@ start : 2023.05.11 ~
   rez setting
   project config setting
  
-1. exr - excel creator : 은진,희정
+1. exr - excel creator : 은진,희진
 
-3. excel - shotgrid (shot list) uploder : 원규, 의민
+2. excel - shotgrid (shot list) uploder : 원규, 의민
 
-5. exr copy - convert : 성우, 선준
+3. exr copy - convert : 성우, 선준
   
