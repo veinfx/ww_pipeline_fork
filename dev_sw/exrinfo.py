@@ -11,7 +11,7 @@ project_name = 'seine'
 # input_data = input("scan data dir name : ")
 input_dir_1 = '20221017_plate_scan'
 input_dir_2 = '001_C140C022_220304_WOFX'
-input_dir_2 = '002_A130C005_220226_RPGF'
+# input_dir_2 = '002_A130C005_220226_RPGF'
 
 dir_path = f'/show/{project_name}/production/scan/{input_dir_1}/{input_dir_2}'
 print(dir_path)
