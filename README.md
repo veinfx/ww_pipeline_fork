@@ -1,9 +1,9 @@
 # set_pipline_start
 
 start : 2023.05.11 ~ 
-  ##스튜디오 프로젝트 기본 구성 회의
-  ##rez setting
-  ##project config setting
+  스튜디오 프로젝트 기본 구성 회의
+  rez setting
+  project config setting
  
 1. exr - excel creator : 은진,희진
 
