@@ -10,9 +10,11 @@ exr_file = OpenEXR.InputFile(exr_file_path)
 header = exr_file.header()
 
 # 모든 메타데이터 출력
-print("test:")
+print("data:")
 for key, value in header.items():
     print(f"{key}: {value}")
+
+
 
 # 파일 닫기
 exr_file.close()

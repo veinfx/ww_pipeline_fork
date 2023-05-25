@@ -3,9 +3,9 @@ import glob
 
 # import fileseq
 
-filepath = os.path.dirname(os.path.realpath(__file__))
-
-print(filepath)
+# filepath = os.path.dirname(os.path.realpath(__file__))
+#
+# print(filepath)
 
 project_name = 'seine'
 # input_data = input("scan data dir name : ")

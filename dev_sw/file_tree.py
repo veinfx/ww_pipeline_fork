@@ -29,7 +29,7 @@ project_data = {"name": user_project_name, "sg_description": "This is a new proj
 project_path = f"/show/{user_project_name}"
 # os.mkdir(project_path)
 
-defult_dir_list = ['asset', 'seq', 'production/scan','production/excel', 'temp']
+defult_dir_list = ['asset', 'seq', 'production/scan', 'production/excel', 'temp']
 
 
 def make_dirs():
