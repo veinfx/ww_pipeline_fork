@@ -6,8 +6,8 @@ start : 2023.05.11 ~
   project config setting
  
 1. exr - excel creator : 은진,희정
-2. 
+
 3. excel - shotgrid (shot list) uploder : 원규, 의민
-4. 
+
 5. exr copy - convert : 성우, 선준
   
