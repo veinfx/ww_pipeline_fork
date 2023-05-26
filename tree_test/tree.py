@@ -13,17 +13,17 @@ import openpyxl
 # from dir_names import *  # Imports the list of folders from dir_names.py file
 
 main_dir = '/home/west/test/show'
-root_dir = 'goguma' #project name(code)
+ROOT_DIR = 'goguma' #project name(code)
 # main_dir_names = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']  # Name of the sub-directories
 
 
 def create_project():
     # shotgrid project code get ?
-    os.makedirs(os.path.join(main_dir, root_dir), exist_ok=True)
+    os.makedirs(os.path.join(main_dir, ROOT_DIR), exist_ok=True)
 
 
 def default_dir():
-    path = os.path.join(main_dir, root_dir)
+    path = os.path.join(main_dir, ROOT_DIR)
     default_directory = ['assets', 'sequences', 'tmp']
     for d in default_directory:
         os.makedirs(os.path.join(path, d), exist_ok=True)
@@ -52,7 +52,7 @@ def get_seq():
 
 
 def create_plate_dir():
-    path = os.path.join(main_dir, root_dir)
+    path = os.path.join(main_dir, ROOT_DIR)
     default_directory = ['org', 'jpg', 'mp4']
     for d in default_directory:
         os.makedirs(os.path.join(path, d), exist_ok=True)
@@ -75,7 +75,7 @@ def find_dir():
 #     # Create directory
 #     for i in range(0, len(main_dir)):
 #         for j in range(0, len(main_dir[i])):
-#             dirName = str(root_dir) + '/' + str(main_dir_names[i]) + '/' + str(main_dir[i][j])
+#             dirName = str(ROOT_DIR) + '/' + str(main_dir_names[i]) + '/' + str(main_dir[i][j])
 #
 #             try:
 #                 # Create target Directory

@@ -1,24 +1,19 @@
 import os
 from pprint import pprint
 
-import ffmpeg
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image
 # from openpyxl.styles.fonts import Font
 
-# import shotgun_api3
-
-# url = "https://rndtest.shotgrid.autodesk.com/"
-# script_name = "dongjin"
-# api_key = "n2khFoc&jybfpufdwabdzgxyr"
-# sg = shotgun_api3.Shotgun(url, script_name, api_key)
 
 ROOT_DIR = '/TD/show'
 project_name = 'hanjin'
 project_dir = os.path.join(ROOT_DIR, project_name)
-scan_dir = os.path.join(project_dir, 'production/scan')
+# scan_dir = os.path.join(project_dir, 'production/scan')
 excel_path = os.path.join(project_dir, 'production/excel')
 thumbnail_path = os.path.join(project_dir, 'tmp/thumb')
+
+SCAN_PATH = "/TD/show/hanjin/production/scan/20221017_plate_scan"
 
 
 class CreateExcel:
@@ -26,11 +21,7 @@ class CreateExcel:
         self.wb = Workbook()
         self.ws = self.wb.active
         self.ws.title = 'Shot'
-
-    def get_today_dir(self):
-        self.lists = os.listdir(scan_dir)
-        self.lists.sort(reverse=True)
-        self.dir_name = self.lists[0].split('_')[0]
+        self.dir_name = os.path.basename(SCAN_PATH).split('_')[0]
 
     def set_header(self):
         header_list = [
@@ -45,35 +36,27 @@ class CreateExcel:
 
     def get_data(self):
         self.data = []
-        root_path = os.path.join(scan_dir, self.lists[0])
-
-        for root, dirs, files in os.walk(root_path):
+        for path, dirs, files in os.walk(SCAN_PATH):
             temp_list = []
-            if len(dirs) > 0:
-                for dir in dirs:
-                    scan_path = os.path.join(root, dir)
-
-            if len(files) > 0:
+            if len(files) == 0:
+                pass
+            else:
+                temp_list.append(path)
                 files.sort(reverse=False)
                 tmp = files[0].split('.')
                 scan_name = tmp[0]
                 pad = '%0' + str(len(tmp[1])) + 'd'
                 ext = tmp[2]
-
-                temp_list.append(scan_path)
                 temp_list.append(scan_name)
                 temp_list.append(pad)
                 temp_list.append(ext)
 
             self.data.append(temp_list)
-
-        # for row in self.data:
-        #     self.ws.append(row)
-
-        # pprint(len(self.data))
+        pprint(self.data)
         return self.data
 
-    def insert_thumbnail(self):
+    def insert_data(self):
+        # thumbnail
         img_dir = thumbnail_path
         img_file_list = os.listdir(img_dir)
 
@@ -88,32 +71,25 @@ class CreateExcel:
 
             self.ws.add_image(image, anchor='B' + str(i + 2))
             if i == 0:
-                self.ws.column_dimensions['B'].width = col_width  ## 셀 폭은 한 번만 변경
-            self.ws.row_dimensions[i + 2].height = row_height  ## 셀 높이 변경
-            self.ws.cell(row=i + 2, column=2, value=img_file)  ## 첫 번째 칼럼에 이미지 경로 입력
+                self.ws.column_dimensions['B'].width = col_width
+            self.ws.row_dimensions[i + 2].height = row_height
+            self.ws.cell(row=i + 2, column=2, value=img_file)
 
-        # for row in range(len(self.data)):
-        #     print(row)
-        #     scan_path = self.data[0]
-        #     print(scan_path)
-        #     scan_name = self.data[1]
-        #     pad = self.data[2]
-        #     ext = self.data[3]
-        #     self.ws.append({'H': scan_path}, {'I': scan_name}, {'k': pad}, {'L': ext})
+        # other_data
+        for d in self.data:
+            for row in range(len(self.data)):
+                scan_path = d[0]
+                scan_name = d[1]
+                pad = d[2]
+                ext = d[3]
+                self.ws.append(
+                    {'H': scan_path},
+                    {'I': scan_name},
+                    {'k': pad},
+                    {'L': ext}
+                )
 
-        # for row in self.deta:
-        #     self.ws.append(row=i + 2, column = 8, 9, 11, 12)
-
-    def insert_data(self):
-        # pass
-        for row in range(len(self.data)):
-            scan_path = self.data[0]
-            scan_name = self.data[1]
-            pad = self.data[2]
-            ext = self.data[3]
-            self.ws.append({'H': scan_path}, {'I': scan_name}, {'k': pad}, {'L': ext})
-
-    def save_file(self):
+    def save_excel_file(self):
         name = self.dir_name + ".xls"
         save_dir_path = os.path.join(excel_path, name)
         self.wb.save(save_dir_path)
@@ -121,11 +97,9 @@ class CreateExcel:
 
 if __name__ == "__main__":
     ce = CreateExcel()
-    ce.get_today_dir()
     ce.set_header()
-    ce.insert_thumbnail()
     ce.get_data()
     ce.insert_data()
-    ce.save_file()
+    ce.save_excel_file()
 
 
