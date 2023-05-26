@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/pipeline_starter_fork.iml" filepath="$PROJECT_DIR$/.idea/pipeline_starter_fork.iml" />
     </modules>
   </component>
 </project>
