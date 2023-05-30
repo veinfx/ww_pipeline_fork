@@ -10,7 +10,7 @@ from convert_thumb import get_thumbnail
 SCAN_PATH = "/TD/show/hanjin/production/scan/20221017_plate_scan"
 ROOT_PATH = SCAN_PATH.split('/production/scan')
 
-# thumbnail_path = get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_scan")
+thumbnail_path = get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_scan")
 
 
 class CreateExcel:
