@@ -18,8 +18,8 @@ def get_thumbnail(INPUT_PATH):
             files.sort(reverse=False)
             names = files[0].split('.exr')[0]
             exr_files_dict[os.path.join(path, files[0])] = names
-    for exr_file, file_name in exr_files_dict.items():
-        ffmpeg.run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
+    # for exr_file, file_name in exr_files_dict.items():
+    #     ffmpeg.run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
     return thumbnail_path
 
 # get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_scan")
