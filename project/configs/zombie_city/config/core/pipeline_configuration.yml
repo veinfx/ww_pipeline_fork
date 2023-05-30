@@ -1,0 +1,6 @@
+pc_id: 200
+pc_name: Primary
+project_id: 299
+project_name: zombie_city
+published_file_entity_type: PublishedFile
+use_shotgun_path_cache: true
