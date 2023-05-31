@@ -25,8 +25,8 @@ class ExcelCreater:
         self.first_file_list = []
         self.last_file_list = []
 
-        self.start_meta = None
-        self.last_meta = None
+        # self.start_meta = None
+        # self.last_meta = None
 
         self.exr_meta_list = []
 
@@ -44,13 +44,13 @@ class ExcelCreater:
             raise ValueError("Input path is missing.")
         self._input_path = value
 
-    @property
-    def output_path(self):
-        return self._output_path
+    # @property
+    # def output_path(self):
+    #     return self._output_path
 
-    @output_path.setter
-    def output_path(self, value):
-        self._output_path = value
+    # @output_path.setter
+    # def output_path(self, value):
+    #     self._output_path = value
 
     def get_all_files(self):
         self.files_dict = {}
@@ -79,39 +79,49 @@ class ExcelCreater:
     def get_meta(self):
         # self.origin_data()
         for i, exr in enumerate(self.first_file_list):
+            ######test######
+            # exr.sort(reverse=False)
             # pprint(f"bb=={i}=={exr}")
 
             exr_start_file = OpenEXR.InputFile(exr)
-            self.start_meta = exr_start_file.header()
+            # self.start_meta = exr_start_file.header()
+            start_meta = exr_start_file.header()
 
             exr_last_file = OpenEXR.InputFile(exr)
-            self.last_meta = exr_last_file.header()
+            # self.last_meta = exr_last_file.header()
+            last_meta = exr_last_file.header()
             # print(f"333=={self.start_meta}, 444=={self.last_meta}")
 
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
 
             # 해상도
-            res = re.findall(r'\d+\d+', str(self.start_meta.get("dataWindow")))
+            # res = re.findall(r'\d+\d+', str(self.start_meta.get("dataWindow")))
+            res = re.findall(r'\d+\d+', str(start_meta.get("dataWindow")))
             resolutions = list(map(lambda x: str(int(x) + 1), res))
 
             # 프레임
-            frames = re.findall(r'\d+\.\d+|\d+', str(self.start_meta.get("framesPerSecond")))
+            # frames = re.findall(r'\d+\.\d+|\d+', str(self.start_meta.get("framesPerSecond")))
+            frames = re.findall(r'\d+\.\d+|\d+', str(start_meta.get("framesPerSecond")))
 
             self.exr_meta_list.append(
                 {
                     "scan_path": file_data.group(1),
                     "scan_name": file_data.group(2),
-                    "clip_name": self.start_meta.get("interim.clip.cameraClipName"),
+                    # "clip_name": self.start_meta.get("interim.clip.cameraClipName"),
+                    "clip_name": start_meta.get("interim.clip.cameraClipName"),
                     "pad": '%0' + str(len(file_data.group(3))) + 'd',
                     "ext": file_data.group(4),
                     "resolutions": ' x '.join(resolutions),
                     "start_frame": int(frames[1]),
                     "and_frame": int(frames[0]),
                     "duration": int(frames[0]) - int(frames[1]) + 1,
-                    "timecode_in": self.start_meta.get("arriraw/timeCode"),
-                    "timecode_out": self.last_meta.get("arriraw/timeCode"),
+                    # "timecode_in": self.start_meta.get("arriraw/timeCode"),
+                    "timecode_in": start_meta.get("arriraw/timeCode"),
+                    # "timecode_out": self.last_meta.get("arriraw/timeCode"),
+                    "timecode_out": last_meta.get("arriraw/timeCode"),
                     "framerate": float(frames[2]),
-                    "date": self.start_meta.get("capDate"),
+                    # "date": self.start_meta.get("capDate")
+                    "date": start_meta.get("capDate")
                 }
             )
         # pprint(f"wvwv===={self.exr_meta_list}")
@@ -164,24 +174,43 @@ class ExcelCreater:
         self.insert_thumbnail()
         self.get_meta()
 
-        for row, meta in enumerate(self.exr_meta_list, start=2):
+        # for row, meta in enumerate(self.exr_meta_list, start=2):
             # print(f"coco=={c}==={meta}")
 
-            self.ws.cell(row=row, column=8, value=meta.get("scan_path"))
-            self.ws.cell(row=row, column=9, value=meta.get("scan_name"))
-            self.ws.cell(row=row, column=10, value=meta.get("clip_name"))
-            self.ws.cell(row=row, column=11, value=meta.get("pad"))
-            self.ws.cell(row=row, column=12, value=meta.get("ext"))
-            self.ws.cell(row=row, column=13, value=meta.get("resolutions"))
-            self.ws.cell(row=row, column=14, value=meta.get("start_frame"))
-            self.ws.cell(row=row, column=15, value=meta.get("and_frame"))
-            self.ws.cell(row=row, column=16, value=meta.get("duration"))
+            # self.ws.cell(row=row, column=8, value=meta.get("scan_path"))
+            # self.ws.cell(row=row, column=9, value=meta.get("scan_name"))
+            # self.ws.cell(row=row, column=10, value=meta.get("clip_name"))
+            # self.ws.cell(row=row, column=11, value=meta.get("pad"))
+            # self.ws.cell(row=row, column=12, value=meta.get("ext"))
+            # self.ws.cell(row=row, column=13, value=meta.get("resolutions"))
+            # self.ws.cell(row=row, column=14, value=meta.get("start_frame"))
+            # self.ws.cell(row=row, column=15, value=meta.get("and_frame"))
+            # self.ws.cell(row=row, column=16, value=meta.get("duration"))
 
-            self.ws.cell(row=row, column=20, value=meta.get("timecode_in"))
-            self.ws.cell(row=row, column=21, value=meta.get("timecode_out"))
+            # self.ws.cell(row=row, column=20, value=meta.get("timecode_in"))
+            # self.ws.cell(row=row, column=21, value=meta.get("timecode_out"))
 
-            self.ws.cell(row=row, column=24, value=meta.get("framerate"))
-            self.ws.cell(row=row, column=25, value=meta.get("date"))
+            # self.ws.cell(row=row, column=24, value=meta.get("framerate"))
+            # self.ws.cell(row=row, column=25, value=meta.get("date"))
+
+        #### test #####
+        for meta in self.exr_meta_list:
+            self.ws.append(  
+            {
+                'H': meta.get("scan_path"),
+                'I': meta.get("scan_name"),
+                'J': meta.get("clip_name"),
+                'K': meta.get("pad"),
+                'L': meta.get("ext"),
+                'M': meta.get("resolutions"),
+                'N': meta.get("start_frame"),
+                'O': meta.get("and_frame"),
+                'P': meta.get("duration"),
+                'T': meta.get("timecode_in"),
+                'U': meta.get("timecode_out"),
+                'X': meta.get("framerate"),
+                'Y': meta.get("date")
+                })
 
         self.excel_save()
 
