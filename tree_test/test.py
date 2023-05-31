@@ -1,21 +1,55 @@
 ## test ##
 
-from openpyxl import Workbook
-
-wb = Workbook()
-ws = wb.active  ## 첫 번째 시트
-data = [
-    ['1', 'a'],
-    ['2', 'b']
-]
-
-## 리스트를 행에 삽입.
-for d in data:
-    for row in range(len(data)):
-        print(len(data))
-        ws.append({'A': d[0], 'C': d[1]})  # @ ws.append({1:random_int1, 3:random_int2}과 동일
-
-wb.save('/TD/show/hanjin/production/excel/test.xlsx')
+# from openpyxl import Workbook
+#
+# wb = Workbook()
+# ws = wb.active  ## 첫 번째 시트
+#
+# header_list = [
+#     'check', 'thumbnail', 'roll', 'seq_name', 'shot_name', 'version', 'type',
+#     'scan_path', 'scan_name', 'clip_name', 'pad', 'ext', 'resoultion',
+#     'start_frame', 'end_frame', 'duration', 'retime_duration', 'retime_percent', 'retime_start_frame',
+#     'timecode_in', 'timecode_out', 'just_in', 'just_out', 'framerate', 'date', 'clip_tag'
+# ]
+# for i, title in enumerate(header_list):
+#     ws.cell(row=1, column=i + 1, value=title)
+#
+# data = [
+#     ['C255C014_220511_WOFX.1001.jpg', '/TD/dongjin/projects/gamja/production/scan/20221017_plate_scan/003_C255C014_220511_WOFX',
+#      'C255C014_220511_WOFX', 'C255C014_220511_WOFX', '%04d', 'exr', '3840 x 2160', '1001', '24000', '23000',
+#      '18:54:53:07', '18:54:54:00', '23.976', '2022-05-11 18:47:28'],
+#     ['C140C022_220304_WOFX.1001.jpg', '/TD/dongjin/projects/gamja/production/scan/20221017_plate_scan/001_C140C022_220304_WOFX',
+#      'C140C022_220304_WOFX', 'C140C022_220304_WOFX', '%04d', 'exr', '3840 x 2160', '1001', '24000', '23000',
+#      '12:05:15:09', '12:05:15:22', '23.976', '2022-03-04 11:59:46'],
+#     ['A130C005_220226_RPGF.1001.jpg', '/TD/dongjin/projects/gamja/production/scan/20221017_plate_scan/002_A130C005_220226_RPGF',
+#      'A130C005_220226_RPGF', 'A130C005_220226_RPGF', '%04d', 'exr', '3840 x 2160', '1001', '24000', '23000',
+#      '11:36:22:03', '11:36:22:20', '23.976', '2022-02-26 04:19:29']
+# ]
+#
+# ## 리스트를 행에 삽입.
+# row_max = len(data)
+# for d in data:
+#     for row in range(len(data)):
+#         print(len(data))
+#         ws.append(
+#             {
+#                 'B': d[0],
+#                 'H': d[1],
+#                 'I': d[2],
+#                 'J': d[3],
+#                 'K': d[4],
+#                 'L': d[5],
+#                 'M': d[6],
+#                 'N': d[7],
+#                 'O': d[8],
+#                 'P': d[9],
+#                 'T': d[10],
+#                 'U': d[11],
+#                 'X': d[12],
+#                 'Y': d[13]
+#                 })
+#
+# wb.save(r'C:\Users\jin91\PipelineTD\excel\test.xlsx')
 
 # import ffmpeg
 # import subprocess
@@ -153,18 +187,10 @@ wb.save('/TD/show/hanjin/production/excel/test.xlsx')
 
 
 
-# import os
-#
-# from openpyxl import Workbook
-# from openpyxl.drawing.image import Image
-#
-#
-# def get_col_width_row_height(img_width, img_height):
-#     col_width = img_width * 63.2 / 504.19
-#     # row_height = img_height * 225.35 / 298.96
-#     row_height = img_height * 250 / 298.96
-#     return col_width, row_height
+import os
 
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image
 
 # wb = Workbook()  ## 워크북 생성
 # ws = wb.active  ## 첫 번째 시트
@@ -187,22 +213,28 @@ wb.save('/TD/show/hanjin/production/excel/test.xlsx')
 # wb.save('/home/west/test/one_image.xlsx')
 # wb.close()
 
-# wb = Workbook()  ## 워크북 생성
-# ws = wb.active  ## 첫 번째 시트
-#
-# img_dir = '/home/west/test/images'
-# img_file_list = os.listdir(img_dir)  ## 이미지 파일 리스트
-#
-# for i, img_file in enumerate(img_file_list):
-#     image_path = os.path.join(img_dir, img_file)  ## 이미지 경로
-#     image = Image(image_path)  ## 이미지 로드
-#     image.height = 150
-#     image.width = 250
-#     ws.add_image(image, anchor='A' + str(i +2))  ## 이미지 삽입
-#     col_width, row_height = get_col_width_row_height(image.width, image.height)  ## 엑셀 셀 폭 높이 단위
-#     if i == 0:
-#         ws.column_dimensions['A'].width = col_width  ## 셀 폭은 한 번만 변경
-#     ws.row_dimensions[i + 2].height = row_height  ## 셀 높이 변경
-#     ws.cell(row=i + 2, column=1, value=img_file)  ## 첫 번째 칼럼에 이미지 경로 입력
-#
-# wb.save('/home/west/test/multiple_images.xlsx')
+wb = Workbook()  ## 워크북 생성
+ws = wb.active  ## 첫 번째 시트
+
+def thumbnail_data():
+    thumbnail_dir= r'C:\Users\jin91\PipelineTD\git\images'
+    thumbnail_lists = os.listdir(thumbnail_dir)
+
+    for i, thumbnail_list in enumerate(thumbnail_lists):
+        image = Image(os.path.join(thumbnail_dir, thumbnail_list))
+        image.width = 250
+        image.height = 150
+        col_width = image.width * 50 / 350   ## 엑셀 셀 폭 높이 단위
+        row_height = image.height * 250 / 300
+        ws.add_image(image, anchor='B' + str(i + 2))  ## 이미지 삽입
+        if i == 0:
+            ws.column_dimensions['B'].width = col_width  ## 셀 폭은 한 번만 변경
+        ws.row_dimensions[i + 2].height = row_height  ## 셀 높이 변경
+        ws.cell(row=i + 2, column=2, value=thumbnail_list) ## 이미지 경로 입력
+
+    wb.save(r'C:\Users\jin91\PipelineTD\git\images\test.xlsx')
+
+thumbnail_data()
+
+
+
