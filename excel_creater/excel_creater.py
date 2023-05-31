@@ -5,10 +5,8 @@ from openpyxl import *
 from openpyxl.drawing.image import Image
 import OpenEXR
 
+from pprint import pprint
 from ffmpeg import *
-
-# from convert_thumbnail import get_thumbnail
-# thumbnail_dir = get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_scan")
 
 
 class ExcelCreater:
@@ -31,9 +29,10 @@ class ExcelCreater:
         self.last_meta = None
 
         self.exr_meta_list = []
-        # self.thumbnail_path = r"/home/west/HJ_root/ihj/production/temp/20221018_plate_scan_thumbnail"
 
         self.img_file_list = []
+
+        self.project_path = self.input_path.split('/production/scan')
 
     @property
     def input_path(self):
@@ -61,11 +60,9 @@ class ExcelCreater:
                 # print(f"ffff==={files}")
                 files.sort(key=lambda x: int(re.findall(r'\d+', x)[-1]))
                 self.files_dict[root] = files
-                # sorted(self.files_dict.items(), key=lambda item: item[0], reverse=False)
         if len(self.files_dict.values()) == 0:
             raise Exception("No files found in the directory.")
         # pprint(f"olol==={self.files_dict}")
-        # pprint(self.files_dict)
 
         return self.files_dict
 
@@ -92,7 +89,6 @@ class ExcelCreater:
             # print(f"333=={self.start_meta}, 444=={self.last_meta}")
 
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
-            # print("123123", file_data)
 
             # 해상도
             res = re.findall(r'\d+\d+', str(self.start_meta.get("dataWindow")))
@@ -121,8 +117,7 @@ class ExcelCreater:
         # pprint(f"wvwv===={self.exr_meta_list}")
 
     def get_thumbnail(self):
-        root_path = self.input_path.split('/production/scan')
-        self.thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
+        self.thumbnail_path = os.path.join(self.project_path[0], f'tmp/thumb{self.project_path[1]}')
         if not os.path.exists(self.thumbnail_path):
             os.makedirs(self.thumbnail_path, exist_ok=True)
 
@@ -133,12 +128,12 @@ class ExcelCreater:
                 names = files[0].split('.exr')[0]
                 exr_files_dict[os.path.join(path, files[0])] = names
 
+        # convert exr to jpg
         for exr_file, file_name in exr_files_dict.items():
             run(output(input(exr_file), f'{self.thumbnail_path}/{file_name}.jpg'))
 
-    def thumbnail_data(self):
+    def insert_thumbnail(self):
         thumbnail_lists = os.listdir(self.thumbnail_path)
-        print(self.thumbnail_path)
         for i, thumbnail_list in enumerate(thumbnail_lists):
             image = Image(os.path.join(self.thumbnail_path, thumbnail_list))
             image.width = 250
@@ -166,7 +161,7 @@ class ExcelCreater:
 
         self.execl_form()
         self.get_thumbnail()
-        self.thumbnail_data()
+        self.insert_thumbnail()
         self.get_meta()
 
         for row, meta in enumerate(self.exr_meta_list, start=2):
@@ -191,29 +186,26 @@ class ExcelCreater:
         self.excel_save()
 
     def excel_save(self):
-
-        file_name = os.path.basename(self.input_path)
-        # print(f"name==={filename}")
-        # new_file_name = file_name + '.csv'
-        new_file_name = file_name + '.xlsx'
-        save_path = os.path.join(self.output_path, new_file_name)
+        excel_path = os.path.join(self.project_path[0], 'production/excel')
+        # name = self.project_path[1] + '.csv'
+        name = self.project_path[1] + '.xlsx'
+        save_dir_path = os.path.join(excel_path, name)
 
         count = 1
-        while os.path.exists(save_path):
-            # new_file_name = f"{file_name}_{count}.csv"
-            new_file_name = f"{file_name}_{count}.xlsx"
-            save_path = os.path.join(self.output_path, new_file_name)
+        while os.path.exists(save_dir_path):
+            # new_name = f'{self.project_path[1]}_{count}.csv'
+            new_name = f'{self.project_path[1]}_{count}.xlsx'
+            save_dir_path = os.path.join(excel_path, new_name)
             count += 1
-
-        self.wb.save(save_path)
+        
+        self.wb.save(save_dir_path)
 
 
 def main():
     ec = ExcelCreater()
 
     # setter test info
-    ec.input_path = "/TD/show/hanjin/production/scan/20221017_plate_scan"
-    ec.output_path = r"/TD/show/hanjin/production/excel"
+    ec.input_path = r"/TD/show/hanjin/production/scan/20221017_plate_scan"
 
     ec.get_all_files()
     ec.get_first_and_last_file()
