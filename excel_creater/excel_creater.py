@@ -3,20 +3,13 @@ import re
 
 from openpyxl import *
 from openpyxl.drawing.image import Image
-
-from pprint import pprint
-import ffmpeg
-from ffmpeg import input
-from ffmpeg import output
-
 import OpenEXR
 
-from convert_thumbnail import get_thumbnail
+from ffmpeg import *
 
-INPUT_PATH = "/TD/show/hanjin/production/scan/20221017_plate_scan"
-ROOT_PATH = INPUT_PATH.split('/production/scan')
-
+# from convert_thumbnail import get_thumbnail
 # thumbnail_dir = get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_scan")
+
 
 class ExcelCreater:
 
@@ -25,7 +18,6 @@ class ExcelCreater:
         self.wb = Workbook()
         self.ws = self.wb.active
         self.ws.title = 'Shot'
-        # self.dir_name = os.path.basename(INPUT_PATH).split('_')[0]
 
         self._input_path = None
         self._output_path = None
@@ -39,6 +31,8 @@ class ExcelCreater:
         self.last_meta = None
 
         self.exr_meta_list = []
+        # self.thumbnail_path = r"/home/west/HJ_root/ihj/production/temp/20221018_plate_scan_thumbnail"
+
         self.img_file_list = []
 
     @property
@@ -67,33 +61,28 @@ class ExcelCreater:
                 # print(f"ffff==={files}")
                 files.sort(key=lambda x: int(re.findall(r'\d+', x)[-1]))
                 self.files_dict[root] = files
+                # sorted(self.files_dict.items(), key=lambda item: item[0], reverse=False)
         if len(self.files_dict.values()) == 0:
             raise Exception("No files found in the directory.")
         # pprint(f"olol==={self.files_dict}")
+        # pprint(self.files_dict)
 
         return self.files_dict
 
     def get_first_and_last_file(self):
         self.first_file_list = []
         self.last_file_list = []
-
         for root, files in self.files_dict.items():
             if len(files) > 0:
                 self.first_file_list.append(root + "/" + files[0])
                 self.last_file_list.append(root + "/" + files[-1])
         # pprint(f"111=={self.first_file_list}, 222=={self.last_file_list}")
-
         return self.first_file_list, self.last_file_list
 
     def get_meta(self):
-        root_path = self.input_path.split('/production/scan')
-        thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
-        if not os.path.exists(thumbnail_path):
-            os.makedirs(thumbnail_path, exist_ok=True)
-
         # self.origin_data()
         for i, exr in enumerate(self.first_file_list):
-            pprint(f"bb=={i}=={exr}")
+            # pprint(f"bb=={i}=={exr}")
 
             exr_start_file = OpenEXR.InputFile(exr)
             self.start_meta = exr_start_file.header()
@@ -103,10 +92,7 @@ class ExcelCreater:
             # print(f"333=={self.start_meta}, 444=={self.last_meta}")
 
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
-
-            # thumb_nail
-            file_name = os.path.splitext(os.path.basename(exr))[0]
-            ffmpeg.run(output(input(exr), f'{thumbnail_path}/{file_name}.jpg'))
+            # print("123123", file_data)
 
             # 해상도
             res = re.findall(r'\d+\d+', str(self.start_meta.get("dataWindow")))
@@ -128,35 +114,33 @@ class ExcelCreater:
                     "duration": int(frames[0]) - int(frames[1]) + 1,
                     "timecode_in": self.start_meta.get("arriraw/timeCode"),
                     "timecode_out": self.last_meta.get("arriraw/timeCode"),
-                    "just_in": int(frames[1]),
-                    "just_out": int(frames[0]),
-                    "framerate":  float(frames[2]),
+                    "framerate": float(frames[2]),
                     "date": self.start_meta.get("capDate"),
                 }
             )
-        print(f"wvwv===={self.exr_meta_list}")
+        # pprint(f"wvwv===={self.exr_meta_list}")
 
-    # def get_thumbnail(self):
-    #     root_path = self.input_path.split('/production/scan')
-    #     thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
-    #     if not os.path.exists(thumbnail_path):
-    #         os.makedirs(thumbnail_path, exist_ok=True)
-    #
-    #     exr_files_dict = {}
-    #     for path, dirs, files in os.walk(INPUT_PATH):
-    #         if len(files) > 0:
-    #             files.sort(reverse=False)
-    #             names = files[0].split('.exr')[0]
-    #             exr_files_dict[os.path.join(path, files[0])] = names
-        # for exr_file, file_name in exr_files_dict.items():
-        #     ffmpeg.run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
-        # return thumbnail_path
+    def get_thumbnail(self):
+        root_path = self.input_path.split('/production/scan')
+        self.thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
+        if not os.path.exists(self.thumbnail_path):
+            os.makedirs(self.thumbnail_path, exist_ok=True)
+
+        exr_files_dict = {}
+        for path, dirs, files in os.walk(self.input_path):
+            if len(files) > 0:
+                files.sort(reverse=False)
+                names = files[0].split('.exr')[0]
+                exr_files_dict[os.path.join(path, files[0])] = names
+
+        for exr_file, file_name in exr_files_dict.items():
+            run(output(input(exr_file), f'{self.thumbnail_path}/{file_name}.jpg'))
 
     def thumbnail_data(self):
-        thumbnail_lists = os.listdir(thumbnail_dir)
+        thumbnail_lists = os.listdir(self.thumbnail_path)
+        print(self.thumbnail_path)
         for i, thumbnail_list in enumerate(thumbnail_lists):
-            # print("123123", thumbnail_list)
-            image = Image(os.path.join(thumbnail_dir, thumbnail_list))
+            image = Image(os.path.join(self.thumbnail_path, thumbnail_list))
             image.width = 250
             image.height = 150
             col_width = image.width * 50 / 350   ## 엑셀 셀 폭 높이 단위
@@ -181,6 +165,7 @@ class ExcelCreater:
     def excel_create(self):
 
         self.execl_form()
+        self.get_thumbnail()
         self.thumbnail_data()
         self.get_meta()
 
@@ -199,47 +184,39 @@ class ExcelCreater:
 
             self.ws.cell(row=row, column=20, value=meta.get("timecode_in"))
             self.ws.cell(row=row, column=21, value=meta.get("timecode_out"))
-            # 23, 24 check!
-            self.ws.cell(row=row, column=22, value=meta.get("start_frame"))
-            self.ws.cell(row=row, column=23, value=meta.get("and_frame"))
+
             self.ws.cell(row=row, column=24, value=meta.get("framerate"))
             self.ws.cell(row=row, column=25, value=meta.get("date"))
 
-        # new_file_name = self.input_path.split("/")[-1] + '.csv'
-        new_file_name = self.input_path.split("/")[-1] + '.xlsx'
-        save_path = os.path.join(self.output_path, new_file_name)
-        count = 1
+        self.excel_save()
 
+    def excel_save(self):
+
+        file_name = os.path.basename(self.input_path)
+        # print(f"name==={filename}")
+        # new_file_name = file_name + '.csv'
+        new_file_name = file_name + '.xlsx'
+        save_path = os.path.join(self.output_path, new_file_name)
+
+        count = 1
         while os.path.exists(save_path):
-            count += 1
-            # new_file_name = f"{self.input_path.split('/')[-1]}_{count}.csv"
-            new_file_name = f"{self.input_path.split('/')[-1]}_{count}.xlsx"
+            # new_file_name = f"{file_name}_{count}.csv"
+            new_file_name = f"{file_name}_{count}.xlsx"
             save_path = os.path.join(self.output_path, new_file_name)
+            count += 1
 
         self.wb.save(save_path)
-
-    # def save_excel_file(self):
-    #     name = self.dir_name + ".csv"
-    #     save_dir_path = os.path.join(excel_path, name)
-    #     self.wb.save(save_dir_path)
 
 
 def main():
     ec = ExcelCreater()
 
     # setter test info
-    # ec.input_path = r"/home/west/HJ_root/ihj/production/scan/20221018_plate_scan"
     ec.input_path = "/TD/show/hanjin/production/scan/20221017_plate_scan"
-    ec.output_path = "/home/west/test/excel"
-    # ec.output_path = r"/home/west/HJ_root/ihj/production/excel"
+    ec.output_path = r"/TD/show/hanjin/production/excel"
+
     ec.get_all_files()
-
     ec.get_first_and_last_file()
-
-    # ec.get_meta()
-    # ec.thumbnail_data()
-
-    # print(f"meta{ec.meat_form()}")
 
     print(f"mack{ec.excel_create()}")
 

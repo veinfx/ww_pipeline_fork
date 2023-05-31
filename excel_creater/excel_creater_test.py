@@ -11,10 +11,7 @@ from ffmpeg import *
 
 from convert_thumbnail import get_thumbnail
 
-INPUT_PATH = "/TD/show/hanjin/production/scan/20221017_plate_scan"
-ROOT_PATH = INPUT_PATH.split('/production/scan')
-
-# thumbnail_dir = get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_scan")
+thumbnail_dir = get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_scan")
 
 
 class ExcelCreater:
@@ -37,7 +34,7 @@ class ExcelCreater:
         self.last_meta = None
 
         self.exr_meta_list = []
-        self.thumbnail_path = r"/home/west/HJ_root/ihj/production/temp/20221018_plate_scan_thumbnail"
+        # self.thumbnail_path = r"/home/west/HJ_root/ihj/production/temp/20221018_plate_scan_thumbnail"
 
         self.img_file_list = []
 
@@ -67,12 +64,11 @@ class ExcelCreater:
                 # print(f"ffff==={files}")
                 files.sort(key=lambda x: int(re.findall(r'\d+', x)[-1]))
                 self.files_dict[root] = files
+                sorted(self.files_dict.items(), key=lambda item: item[0], reverse=False)
         if len(self.files_dict.values()) == 0:
             raise Exception("No files found in the directory.")
 
         # pprint(f"olol==={self.files_dict}")
-
-
         return self.files_dict
 
     def get_first_and_last_file(self):
@@ -89,12 +85,6 @@ class ExcelCreater:
         return self.first_file_list, self.last_file_list
 
     def get_meta(self):
-
-#         root_path = self.input_path.split('/production/scan')
-#         thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
-#         if not os.path.exists(thumbnail_path):
-#             os.makedirs(thumbnail_path, exist_ok=True)
-
         # self.origin_data()
         for i, exr in enumerate(self.first_file_list):
             # print(f"bb=={i}=={exr}")
@@ -107,10 +97,6 @@ class ExcelCreater:
             # print(f"333=={self.start_meta}, 444=={self.last_meta}")
             
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
-
-            # thumb_nail
-            # file_name = os.path.splitext(os.path.basename(exr))[0]
-            # ffmpeg.run(output(input(exr), f'{thumbnail_path}/{file_name}.jpg'))
 
             # 해상도
             res = re.findall(r'\d+\d+', str(self.start_meta.get("dataWindow")))
@@ -139,21 +125,23 @@ class ExcelCreater:
 
         print(f"wvwv===={self.exr_meta_list}")
 
-    # def get_thumbnail(self):
-    #     root_path = self.input_path.split('/production/scan')
-    #     thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
-    #     if not os.path.exists(thumbnail_path):
-    #         os.makedirs(thumbnail_path, exist_ok=True)
-    #
-    #     exr_files_dict = {}
-    #     for path, dirs, files in os.walk(INPUT_PATH):
-    #         if len(files) > 0:
-    #             files.sort(reverse=False)
-    #             names = files[0].split('.exr')[0]
-    #             exr_files_dict[os.path.join(path, files[0])] = names
-        # for exr_file, file_name in exr_files_dict.items():
-        #     ffmpeg.run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
-        # return thumbnail_path
+    def get_thumbnail(self):
+        root_path = self.input_path.split('/production/scan')
+        thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
+        if not os.path.exists(thumbnail_path):
+            os.makedirs(thumbnail_path, exist_ok=True)
+
+        exr_files_dict = {}
+        # for path, dirs, files in os.walk(self.input_path):
+        #     if len(files) > 0:
+        #         files.sort(reverse=False)
+        #         names = files[0].split('.exr')[0]
+        #         exr_files_dict[os.path.join(path, files[0])] = names
+        # for f in self.files_dict
+
+        for exr_file, file_name in exr_files_dict.items():
+            run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
+        return thumbnail_path
 
 #     def thumbnail_data(self):
 #         thumbnail_lists = os.listdir(thumbnail_dir)
