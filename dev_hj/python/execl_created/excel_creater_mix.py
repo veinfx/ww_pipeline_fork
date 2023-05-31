@@ -14,7 +14,6 @@ class ExcelCreater:
         self.wb = Workbook()
         self.ws = self.wb.active
         self.ws.title = 'Shot'
-        # self.dir_name = os.path.basename(SCAN_PATH).split('_')[0]
 
         self._input_path = None
         self._output_path = None
@@ -109,13 +108,30 @@ class ExcelCreater:
                     "duration": int(frames[0]) - int(frames[1]) + 1,
                     "timecode_in": self.start_meta.get("arriraw/timeCode"),
                     "timecode_out": self.last_meta.get("arriraw/timeCode"),
-                    "just_in": int(frames[1]),
-                    "just_out": int(frames[0]),
                     "framerate":  float(frames[2]),
                     "date": self.start_meta.get("capDate"),
                 }
             )
-        print(f"wvwv===={self.exr_meta_list}")
+        # print(f"wvwv===={self.exr_meta_list}")
+
+    # def thumbnail_data(self):
+    #     self.img_file_list = os.listdir(self.thumbnail_path)
+    #
+    #     for i, img_file in enumerate(self.img_file_list):
+    #         image_path = os.path.join(self.thumbnail_path, img_file)
+    #         image = Image(image_path)
+    #
+    #         image.width = 250
+    #         image.height = 15
+    #
+    #         col_width = image.width * 50 / 350
+    #         row_height = image.height * 250 / 30
+    #
+    #         self.ws.add_image(image, anchor='B' + str(i + 2))
+    #         if i == 0:
+    #             self.ws.column_dimensions['B'].width = col_width
+    #         self.ws.row_dimensions[i + 2].height = row_height
+    #         self.ws.cell(row=i + 2, column=2, value=img_file)
 
     # def thumbnail_data(self):
     #
@@ -126,11 +142,11 @@ class ExcelCreater:
     #         img_form = img_file.split('.')
     #         print(f"kk=={img_form}")
     #
-    #         if img_form[0] == self.exr_meta_list[0]
+    #         # if img_form[0] == self.exr_meta_list[0]
     #
-    #         for c, meta_img in enumerate(self.exr_meta_list[0]):
-    #             print(f"ff=={meta_img}")
-    #             if img_form[0] == meta_img.get("scan_name"):
+    #         # for c, meta_img in enumerate(self.exr_meta_list[0]):
+    #         #     print(f"ff=={meta_img}")
+    #         #     if img_form[0] == meta_img.get("scan_name"):
     #
     #
     #
@@ -166,7 +182,7 @@ class ExcelCreater:
     def excel_create(self):
 
         self.execl_form()
-        self.thumbnail_data()
+        # self.thumbnail_data()
         self.get_meta()
 
         for row, meta in enumerate(self.exr_meta_list, start=2):
@@ -184,26 +200,29 @@ class ExcelCreater:
 
             self.ws.cell(row=row, column=20, value=meta.get("timecode_in"))
             self.ws.cell(row=row, column=21, value=meta.get("timecode_out"))
-            self.ws.cell(row=row, column=22, value=meta.get("start_frame"))
-            self.ws.cell(row=row, column=23, value=meta.get("and_frame"))
+
             self.ws.cell(row=row, column=24, value=meta.get("framerate"))
             self.ws.cell(row=row, column=25, value=meta.get("date"))
 
-        new_file_name = self.input_path.split("/")[-1] + '.csv'
-        save_path = os.path.join(self.output_path, new_file_name)
-        count = 1
+        self.excel_save()
 
+    def excel_save(self):
+
+        file_name = os.path.basename(self.input_path)
+        # print(f"name==={filename}")
+        new_file_name = file_name + '.csv'
+        save_path = os.path.join(self.output_path, new_file_name)
+
+        count = 1
         while os.path.exists(save_path):
-            count += 1
-            new_file_name = f"{self.input_path.split('/')[-1]}_{count}.csv"
+            new_file_name = f"{file_name}_{count}.csv"
             save_path = os.path.join(self.output_path, new_file_name)
+            count += 1
 
         self.wb.save(save_path)
 
-    # def save_excel_file(self):
-    #     name = self.dir_name + ".csv"
-    #     save_dir_path = os.path.join(excel_path, name)
-    #     self.wb.save(save_dir_path)
+
+
 
 
 def main():
@@ -214,13 +233,7 @@ def main():
     ec.output_path = r"/home/west/HJ_root/ihj/production/excel"
 
     ec.get_all_files()
-
     ec.get_first_and_last_file()
-
-    # ec.get_meta()
-    # ec.thumbnail_data()
-
-    # print(f"meta{ec.meat_form()}")
 
     print(f"mack{ec.excel_create()}")
 
