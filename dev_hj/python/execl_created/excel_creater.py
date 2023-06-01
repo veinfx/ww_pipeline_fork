@@ -46,7 +46,7 @@ class ExcelCreater:
                 self.files_dict[root] = files
         if len(self.files_dict.values()) == 0:
             raise Exception("No files found in the directory.")
-        # print(f"olol==={self.files_dict}")
+        print(f"olol==={self.files_dict}")
 
         return self.files_dict
 
@@ -58,7 +58,7 @@ class ExcelCreater:
             if len(files) > 0:
                 self.first_file_list.append(root + "/" + files[0])
                 self.last_file_list.append(root + "/" + files[-1])
-        # print(f"111=={self.first_file_list}, 222=={self.last_file_list}")
+        print(f"111=={self.first_file_list}, 222=={self.last_file_list}")
 
         return self.first_file_list, self.last_file_list
 
