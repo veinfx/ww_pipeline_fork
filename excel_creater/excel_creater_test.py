@@ -19,6 +19,7 @@ class ExcelCreater:
         self.ws.title = 'Shot'
 
         self._input_path = None
+        self.thumbnail_path = None
 
         self.files_dict = {}
 
@@ -29,9 +30,6 @@ class ExcelCreater:
         self.last_meta = None
 
         self.exr_meta_list = []
-        self.thumbnail_path = r"/home/west/HJ_root/ihj/production/temp/20221018_plate_scan_thumbnail"
-
-        # self.img_file_list = []
 
     @property
     def input_path(self):
@@ -72,13 +70,13 @@ class ExcelCreater:
 
     def thumbnail_create(self):
         root_path = self.input_path.split('/production/scan')
-        thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
-        if not os.path.exists(thumbnail_path):
-            os.makedirs(thumbnail_path, exist_ok=True)
+        self.thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
+        if not os.path.exists(self.thumbnail_path):
+            os.makedirs(self.thumbnail_path, exist_ok=True)
 
         for i, exr in enumerate(self.first_file_list):
             file_name = os.path.splitext(os.path.basename(exr))[0]
-            ffmpeg.run(output(input(exr), f'{thumbnail_path}/{file_name}.jpg'))
+            ffmpeg.run(output(input(exr), f'{self.thumbnail_path}/{file_name}.jpg'))
 
     def get_meta(self):
         # self.origin_data()
@@ -139,41 +137,6 @@ class ExcelCreater:
                 self.ws.column_dimensions['B'].width = col_width
             self.ws.row_dimensions[i + 2].height = row_height
             self.ws.cell(row=i + 2, column=2, value=img_file)
-
-    # def thumbnail_data(self):
-    #
-    #     self.img_file_list = os.listdir(self.thumbnail_path)
-    #     print(f"im=={self.img_file_list}")
-    #
-    #     for i, img_file in enumerate(self.img_file_list):
-    #         img_form = img_file.split('.')
-    #         print(f"kk=={img_form}")
-    #
-    #         # if img_form[0] == self.exr_meta_list[0]
-    #
-    #         # for c, meta_img in enumerate(self.exr_meta_list[0]):
-    #         #     print(f"ff=={meta_img}")
-    #         #     if img_form[0] == meta_img.get("scan_name"):
-    #
-    #
-    #
-    #                 print(f"mmmm=={img_file}")
-    #                 image_path = os.path.join(self.thumbnail_path, img_file)
-    #                 image = Image(image_path)
-    #                 image.width = 250
-    #                 image.height = 150
-    #
-    #                 col_width = image.width * 50 / 350
-    #                 row_height = image.height * 250 / 300
-    #
-    #                 img_form = img_file.split('.')
-    #                 print(f"ss==={img_form}")
-    #                 # if img_form[0] == file_data.group(2):
-    #                 self.ws.add_image(image, anchor='B' + str(i + 2))
-    #                 if i == 0:
-    #                     self.ws.column_dimensions['B'].width = col_width
-    #                 self.ws.row_dimensions[i + 2].height = row_height
-    #                 self.ws.cell(row=i + 2, column=2, value=img_file)
 
     def execl_form(self):
         header_list = [
@@ -236,13 +199,11 @@ def main():
 
     # setter test info
     ec.input_path = r"/TD/show/hanjin/production/scan/20221017_plate_scan"
-    # ec.output_path = r"/home/west/HJ_root/ihj/production/excel"
 
     ec.get_all_files()
     ec.get_first_and_last_file()
     ec.thumbnail_create()
-
-    print(f"mack{ec.excel_create()}")
+    ec.excel_create()
 
 
 if __name__ == '__main__':
