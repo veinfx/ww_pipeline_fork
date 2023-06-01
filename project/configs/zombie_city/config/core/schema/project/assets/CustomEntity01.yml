@@ -1,8 +1,0 @@
-type: "shotgun_entity"
-
-name: "code"
-
-entity_type: "CustomEntity01"
-
-filters:
-    - { "path": "project", "relation": "is", "values": [ "$project" ] }
