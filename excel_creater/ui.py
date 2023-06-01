@@ -1,7 +1,7 @@
 import sys
 
-from PySide2.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QMessageBox
-from PySide2 import QtWidgets, QtGui
+from PySide2.QtWidgets import *
+from PySide2 import QtGui
 
 
 class CreateExcelView(QWidget):
@@ -20,17 +20,17 @@ class CreateExcelView(QWidget):
 
         hbtop = QHBoxLayout()
         vb.addLayout(hbtop)
-        self.line_path = QtWidgets.QLineEdit()
-        self.btn_browse = QtWidgets.QPushButton("Browse")
+        self.line_path = QLineEdit()
+        self.btn_browse = QPushButton("Browse")
         hbtop.addWidget(self.line_path)
         hbtop.addWidget(self.btn_browse)
 
         hbbot = QHBoxLayout()
         vb.addLayout(hbbot)
         hbbot.addStretch()
-        self.btn_download = QtWidgets.QPushButton("Save")
-        self.btn_cancel = QtWidgets.QPushButton("Cancel")
-        hbbot.addWidget(self.btn_download)
+        self.btn_create = QPushButton("Create Excel")
+        self.btn_cancel = QPushButton("Cancel")
+        hbbot.addWidget(self.btn_create)
         hbbot.addWidget(self.btn_cancel)
         hbbot.addStretch()
 
@@ -38,7 +38,7 @@ class CreateExcelView(QWidget):
 
         # button clicked event example
         self.btn_browse.clicked.connect(self.browse_test)
-        self.btn_download.clicked.connect(self.download_test)
+        self.btn_create.clicked.connect(self.create_test)
         self.btn_cancel.clicked.connect(self.cancel_test)
 
         self.show()
@@ -56,7 +56,7 @@ class CreateExcelView(QWidget):
     def browse_test(self):
         print("Select a directory")
 
-    def download_test(self):
+    def create_test(self):
         # self.message_box()
         print("Save Excel File")
 

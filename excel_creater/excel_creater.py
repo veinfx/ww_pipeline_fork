@@ -3,20 +3,11 @@ import re
 
 from openpyxl import *
 from openpyxl.drawing.image import Image
-
-from pprint import pprint
-import ffmpeg
-from ffmpeg import input
-from ffmpeg import output
-
 import OpenEXR
 
-from convert_thumbnail import get_thumbnail
+from pprint import pprint
+from ffmpeg import *
 
-INPUT_PATH = "/TD/show/hanjin/production/scan/20221017_plate_scan"
-ROOT_PATH = INPUT_PATH.split('/production/scan')
-
-# thumbnail_dir = get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_scan")
 
 class ExcelCreater:
 
@@ -25,21 +16,22 @@ class ExcelCreater:
         self.wb = Workbook()
         self.ws = self.wb.active
         self.ws.title = 'Shot'
-        # self.dir_name = os.path.basename(INPUT_PATH).split('_')[0]
 
         self._input_path = None
-        self._output_path = None
+        # self._output_path = None
 
         self.files_dict = {}
 
         self.first_file_list = []
         self.last_file_list = []
 
-        self.start_meta = None
-        self.last_meta = None
+        # self.start_meta = None
+        # self.last_meta = None
 
         self.exr_meta_list = []
+
         self.img_file_list = []
+
 
     @property
     def input_path(self):
@@ -51,13 +43,13 @@ class ExcelCreater:
             raise ValueError("Input path is missing.")
         self._input_path = value
 
-    @property
-    def output_path(self):
-        return self._output_path
+    # @property
+    # def output_path(self):
+    #     return self._output_path
 
-    @output_path.setter
-    def output_path(self, value):
-        self._output_path = value
+    # @output_path.setter
+    # def output_path(self, value):
+    #     self._output_path = value
 
     def get_all_files(self):
         self.files_dict = {}
@@ -69,8 +61,8 @@ class ExcelCreater:
                 self.files_dict[root] = files
         if len(self.files_dict.values()) == 0:
             raise Exception("No files found in the directory.")
-        # pprint(f"olol==={self.files_dict}")
 
+        # pprint(f"olol==={self.files_dict}")
         return self.files_dict
 
     def get_first_and_last_file(self):
@@ -81,82 +73,82 @@ class ExcelCreater:
             if len(files) > 0:
                 self.first_file_list.append(root + "/" + files[0])
                 self.last_file_list.append(root + "/" + files[-1])
-        # pprint(f"111=={self.first_file_list}, 222=={self.last_file_list}")
 
+        # pprint(f"111=={self.first_file_list}, 222=={self.last_file_list}")
         return self.first_file_list, self.last_file_list
 
     def get_meta(self):
-        root_path = self.input_path.split('/production/scan')
-        thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
-        if not os.path.exists(thumbnail_path):
-            os.makedirs(thumbnail_path, exist_ok=True)
-
         # self.origin_data()
         for i, exr in enumerate(self.first_file_list):
-            pprint(f"bb=={i}=={exr}")
+            # pprint(f"bb=={i}=={exr}")
 
             exr_start_file = OpenEXR.InputFile(exr)
-            self.start_meta = exr_start_file.header()
+            # self.start_meta = exr_start_file.header()
+            start_meta = exr_start_file.header()
 
             exr_last_file = OpenEXR.InputFile(exr)
-            self.last_meta = exr_last_file.header()
+            # self.last_meta = exr_last_file.header()
+            last_meta = exr_last_file.header()
             # print(f"333=={self.start_meta}, 444=={self.last_meta}")
 
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
 
-            # thumb_nail
-            file_name = os.path.splitext(os.path.basename(exr))[0]
-            ffmpeg.run(output(input(exr), f'{thumbnail_path}/{file_name}.jpg'))
-
             # 해상도
-            res = re.findall(r'\d+\d+', str(self.start_meta.get("dataWindow")))
+            # res = re.findall(r'\d+\d+', str(self.start_meta.get("dataWindow")))
+            res = re.findall(r'\d+\d+', str(start_meta.get("dataWindow")))
             resolutions = list(map(lambda x: str(int(x) + 1), res))
 
             # 프레임
-            frames = re.findall(r'\d+\.\d+|\d+', str(self.start_meta.get("framesPerSecond")))
+            # frames = re.findall(r'\d+\.\d+|\d+', str(self.start_meta.get("framesPerSecond")))
+            frames = re.findall(r'\d+\.\d+|\d+', str(start_meta.get("framesPerSecond")))
 
             self.exr_meta_list.append(
                 {
                     "scan_path": file_data.group(1),
                     "scan_name": file_data.group(2),
-                    "clip_name": self.start_meta.get("interim.clip.cameraClipName"),
+                    # "clip_name": self.start_meta.get("interim.clip.cameraClipName"),
+                    "clip_name": start_meta.get("interim.clip.cameraClipName"),
                     "pad": '%0' + str(len(file_data.group(3))) + 'd',
                     "ext": file_data.group(4),
                     "resolutions": ' x '.join(resolutions),
                     "start_frame": int(frames[1]),
                     "and_frame": int(frames[0]),
                     "duration": int(frames[0]) - int(frames[1]) + 1,
-                    "timecode_in": self.start_meta.get("arriraw/timeCode"),
-                    "timecode_out": self.last_meta.get("arriraw/timeCode"),
-                    "just_in": int(frames[1]),
-                    "just_out": int(frames[0]),
-                    "framerate":  float(frames[2]),
-                    "date": self.start_meta.get("capDate"),
+                    # "timecode_in": self.start_meta.get("arriraw/timeCode"),
+                    "timecode_in": start_meta.get("arriraw/timeCode"),
+                    # "timecode_out": self.last_meta.get("arriraw/timeCode"),
+                    "timecode_out": last_meta.get("arriraw/timeCode"),
+                    "framerate": float(frames[2]),
+                    # "date": self.start_meta.get("capDate")
+                    "date": start_meta.get("capDate")
                 }
             )
-        print(f"wvwv===={self.exr_meta_list}")
+        # pprint(f"wvwv===={self.exr_meta_list}")
 
-    # def get_thumbnail(self):
-    #     root_path = self.input_path.split('/production/scan')
-    #     thumbnail_path = os.path.join(root_path[0], f'tmp/thumb{root_path[1]}')
-    #     if not os.path.exists(thumbnail_path):
-    #         os.makedirs(thumbnail_path, exist_ok=True)
-    #
-    #     exr_files_dict = {}
-    #     for path, dirs, files in os.walk(INPUT_PATH):
-    #         if len(files) > 0:
-    #             files.sort(reverse=False)
-    #             names = files[0].split('.exr')[0]
-    #             exr_files_dict[os.path.join(path, files[0])] = names
-        # for exr_file, file_name in exr_files_dict.items():
-        #     ffmpeg.run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
-        # return thumbnail_path
+    def get_thumbnail(self):
+        self.project_path = self.input_path.split('/production/scan/')
+        thumbnail_path = os.path.join(self.project_path[0], f'tmp/thumb/{self.project_path[1]}')
+        if not os.path.exists(thumbnail_path):
+            os.makedirs(thumbnail_path, exist_ok=True)
 
-    def thumbnail_data(self):
-        thumbnail_lists = os.listdir(thumbnail_dir)
+        exr_files_dict = {}
+        for path, dirs, files in os.walk(self.input_path):
+            if len(files) > 0:
+                files.sort(reverse=False)
+                names = files[0].split('.exr')[0]
+                exr_files_dict[os.path.join(path, files[0])] = names
+
+        # convert exr to jpg
+        for exr_file, file_name in exr_files_dict.items():
+            if not os.path.isfile(f'{thumbnail_path}/{file_name}.jpg'):
+                run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
+
+        return thumbnail_path
+
+    def insert_thumbnail(self):
+        thumbnail_lists = os.listdir(self.get_thumbnail())
         for i, thumbnail_list in enumerate(thumbnail_lists):
-            # print("123123", thumbnail_list)
-            image = Image(os.path.join(thumbnail_dir, thumbnail_list))
+            image = Image(os.path.join(self.get_thumbnail(), thumbnail_list))
             image.width = 250
             image.height = 150
             col_width = image.width * 50 / 350   ## 엑셀 셀 폭 높이 단위
@@ -181,7 +173,8 @@ class ExcelCreater:
     def excel_create(self):
 
         self.execl_form()
-        self.thumbnail_data()
+        # self.get_thumbnail()
+        self.insert_thumbnail()
         self.get_meta()
 
         for row, meta in enumerate(self.exr_meta_list, start=2):
@@ -199,47 +192,56 @@ class ExcelCreater:
 
             self.ws.cell(row=row, column=20, value=meta.get("timecode_in"))
             self.ws.cell(row=row, column=21, value=meta.get("timecode_out"))
-            # 23, 24 check!
-            self.ws.cell(row=row, column=22, value=meta.get("start_frame"))
-            self.ws.cell(row=row, column=23, value=meta.get("and_frame"))
+
             self.ws.cell(row=row, column=24, value=meta.get("framerate"))
             self.ws.cell(row=row, column=25, value=meta.get("date"))
 
-        # new_file_name = self.input_path.split("/")[-1] + '.csv'
-        new_file_name = self.input_path.split("/")[-1] + '.xlsx'
-        save_path = os.path.join(self.output_path, new_file_name)
+        #### test #####
+        # for row, meta in enumerate(self.exr_meta_list, start=2):
+        #     print(row)
+        #     self.ws.append(
+        #     {
+        #         'H': meta.get("scan_path"),
+        #         'I': meta.get("scan_name"),
+        #         'J': meta.get("clip_name"),
+        #         'K': meta.get("pad"),
+        #         'L': meta.get("ext"),
+        #         'M': meta.get("resolutions"),
+        #         'N': meta.get("start_frame"),
+        #         'O': meta.get("and_frame"),
+        #         'P': meta.get("duration"),
+        #         'T': meta.get("timecode_in"),
+        #         'U': meta.get("timecode_out"),
+        #         'X': meta.get("framerate"),
+        #         'Y': meta.get("date")
+        #         })
+
+        self.excel_save()
+
+    def excel_save(self):
+        excel_path = os.path.join(self.project_path[0], 'production/excel')
+        # name = self.project_path[1] + '.csv'
+        name = f'{self.project_path[1]}.xlsx'
+        save_dir_path = os.path.join(excel_path, name)
+
         count = 1
-
-        while os.path.exists(save_path):
+        while os.path.exists(save_dir_path):
+            # new_name = f'{self.project_path[1]}_{count}.csv'
+            new_name = f'{self.project_path[1]}_{count}.xlsx'
+            save_dir_path = os.path.join(excel_path, new_name)
             count += 1
-            # new_file_name = f"{self.input_path.split('/')[-1]}_{count}.csv"
-            new_file_name = f"{self.input_path.split('/')[-1]}_{count}.xlsx"
-            save_path = os.path.join(self.output_path, new_file_name)
 
-        self.wb.save(save_path)
-
-    # def save_excel_file(self):
-    #     name = self.dir_name + ".csv"
-    #     save_dir_path = os.path.join(excel_path, name)
-    #     self.wb.save(save_dir_path)
+        self.wb.save(save_dir_path)
 
 
 def main():
     ec = ExcelCreater()
 
     # setter test info
-    # ec.input_path = r"/home/west/HJ_root/ihj/production/scan/20221018_plate_scan"
-    ec.input_path = "/TD/show/hanjin/production/scan/20221017_plate_scan"
-    ec.output_path = "/home/west/test/excel"
-    # ec.output_path = r"/home/west/HJ_root/ihj/production/excel"
+    ec.input_path = r"/TD/show/hanjin/production/scan/20221017_plate_scan"
+
     ec.get_all_files()
-
     ec.get_first_and_last_file()
-
-    # ec.get_meta()
-    # ec.thumbnail_data()
-
-    # print(f"meta{ec.meat_form()}")
 
     print(f"mack{ec.excel_create()}")
 

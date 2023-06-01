@@ -15,10 +15,12 @@ thumbnail_path = get_thumbnail("/TD/show/hanjin/production/scan/20221017_plate_s
 
 class CreateExcel:
     def __init__(self):
-        self.dir_name = os.path.basename(SCAN_PATH).split('_')[0]
+        # self.dir_name = os.path.basename(SCAN_PATH).split('_')[0]
         self.wb = Workbook()
         self.ws = self.wb.active
         self.ws.title = 'Shot'
+        self.input_path = r"C:/Users/jin91/Documents/ShotGrid/show/oksusu/production/scan/20221017_plate_scan"
+        self.root_path = self.input_path.split('/production/scan')
 
     def set_header(self):
         header_list = [
@@ -98,12 +100,28 @@ class CreateExcel:
         name = self.dir_name + ".xlsx"
         save_dir_path = os.path.join(excel_path, name)
         self.wb.save(save_dir_path)
+    #     # excel_path = os.path.join(self.root_path[0], 'production/excel')
+    #     excel_path = 'C:/Users/jin91/Documents/ShotGrid/show/oksusu/production/excel'
+    #     # name = self.root_path[1] + '.xlsx'
+    #     name = '20221017_plate_scan' + '.xlsx'
+    #
+    #     save_dir_path = os.path.join(excel_path, name)
+    #     print(save_dir_path)
+    #
+    #     count = 1
+    #     print("123")
+    #     while os.path.exists(save_dir_path):
+    #         print("456")
+    #         new_name = f'20221017_plate_scan_{count}.xlsx'
+    #         save_dir_path = os.path.join(excel_path, new_name)
+    #
+    #     self.wb.save(save_dir_path)
 
 
 if __name__ == "__main__":
     ce = CreateExcel()
     ce.set_header()
-    ce.get_data()
+    # ce.get_data()
     # ce.insert_data()
     ce.save_excel_file()
 
