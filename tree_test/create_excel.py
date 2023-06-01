@@ -96,26 +96,26 @@ class CreateExcel:
                     # )
 
     def save_excel_file(self):
-    #     excel_path = os.path.join(ROOT_PATH[0], f'production/excel')
-    #     name = self.dir_name + ".xlsx"
-    #     save_dir_path = os.path.join(excel_path, name)
-    #     self.wb.save(save_dir_path)
-        # excel_path = os.path.join(self.root_path[0], 'production/excel')
-        excel_path = 'C:/Users/jin91/Documents/ShotGrid/show/oksusu/production/excel'
-        # name = self.root_path[1] + '.xlsx'
-        name = '20221017_plate_scan' + '.xlsx'
-
+        excel_path = os.path.join(ROOT_PATH[0], f'production/excel')
+        name = self.dir_name + ".xlsx"
         save_dir_path = os.path.join(excel_path, name)
-        print(save_dir_path)
-
-        count = 1
-        print("123")
-        while os.path.exists(save_dir_path):
-            print("456")
-            new_name = f'20221017_plate_scan_{count}.xlsx'
-            save_dir_path = os.path.join(excel_path, new_name)
-        
         self.wb.save(save_dir_path)
+    #     # excel_path = os.path.join(self.root_path[0], 'production/excel')
+    #     excel_path = 'C:/Users/jin91/Documents/ShotGrid/show/oksusu/production/excel'
+    #     # name = self.root_path[1] + '.xlsx'
+    #     name = '20221017_plate_scan' + '.xlsx'
+    #
+    #     save_dir_path = os.path.join(excel_path, name)
+    #     print(save_dir_path)
+    #
+    #     count = 1
+    #     print("123")
+    #     while os.path.exists(save_dir_path):
+    #         print("456")
+    #         new_name = f'20221017_plate_scan_{count}.xlsx'
+    #         save_dir_path = os.path.join(excel_path, new_name)
+    #
+    #     self.wb.save(save_dir_path)
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ class ExcelCreater:
         self.ws.title = 'Shot'
 
         self._input_path = None
-        self._output_path = None
+        # self._output_path = None
 
         self.files_dict = {}
 
@@ -32,7 +32,6 @@ class ExcelCreater:
 
         self.img_file_list = []
 
-        self.project_path = self.input_path.split('/production/scan')
 
     @property
     def input_path(self):
@@ -62,25 +61,25 @@ class ExcelCreater:
                 self.files_dict[root] = files
         if len(self.files_dict.values()) == 0:
             raise Exception("No files found in the directory.")
-        # pprint(f"olol==={self.files_dict}")
 
+        # pprint(f"olol==={self.files_dict}")
         return self.files_dict
 
     def get_first_and_last_file(self):
         self.first_file_list = []
         self.last_file_list = []
+
         for root, files in self.files_dict.items():
             if len(files) > 0:
                 self.first_file_list.append(root + "/" + files[0])
                 self.last_file_list.append(root + "/" + files[-1])
+
         # pprint(f"111=={self.first_file_list}, 222=={self.last_file_list}")
         return self.first_file_list, self.last_file_list
 
     def get_meta(self):
         # self.origin_data()
         for i, exr in enumerate(self.first_file_list):
-            ######test######
-            # exr.sort(reverse=False)
             # pprint(f"bb=={i}=={exr}")
 
             exr_start_file = OpenEXR.InputFile(exr)
@@ -127,9 +126,10 @@ class ExcelCreater:
         # pprint(f"wvwv===={self.exr_meta_list}")
 
     def get_thumbnail(self):
-        self.thumbnail_path = os.path.join(self.project_path[0], f'tmp/thumb{self.project_path[1]}')
-        if not os.path.exists(self.thumbnail_path):
-            os.makedirs(self.thumbnail_path, exist_ok=True)
+        self.project_path = self.input_path.split('/production/scan/')
+        thumbnail_path = os.path.join(self.project_path[0], f'tmp/thumb/{self.project_path[1]}')
+        if not os.path.exists(thumbnail_path):
+            os.makedirs(thumbnail_path, exist_ok=True)
 
         exr_files_dict = {}
         for path, dirs, files in os.walk(self.input_path):
@@ -140,12 +140,15 @@ class ExcelCreater:
 
         # convert exr to jpg
         for exr_file, file_name in exr_files_dict.items():
-            run(output(input(exr_file), f'{self.thumbnail_path}/{file_name}.jpg'))
+            if not os.path.isfile(f'{thumbnail_path}/{file_name}.jpg'):
+                run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
+
+        return thumbnail_path
 
     def insert_thumbnail(self):
-        thumbnail_lists = os.listdir(self.thumbnail_path)
+        thumbnail_lists = os.listdir(self.get_thumbnail())
         for i, thumbnail_list in enumerate(thumbnail_lists):
-            image = Image(os.path.join(self.thumbnail_path, thumbnail_list))
+            image = Image(os.path.join(self.get_thumbnail(), thumbnail_list))
             image.width = 250
             image.height = 150
             col_width = image.width * 50 / 350   ## 엑셀 셀 폭 높이 단위
@@ -170,54 +173,55 @@ class ExcelCreater:
     def excel_create(self):
 
         self.execl_form()
-        self.get_thumbnail()
+        # self.get_thumbnail()
         self.insert_thumbnail()
         self.get_meta()
 
-        # for row, meta in enumerate(self.exr_meta_list, start=2):
+        for row, meta in enumerate(self.exr_meta_list, start=2):
             # print(f"coco=={c}==={meta}")
 
-            # self.ws.cell(row=row, column=8, value=meta.get("scan_path"))
-            # self.ws.cell(row=row, column=9, value=meta.get("scan_name"))
-            # self.ws.cell(row=row, column=10, value=meta.get("clip_name"))
-            # self.ws.cell(row=row, column=11, value=meta.get("pad"))
-            # self.ws.cell(row=row, column=12, value=meta.get("ext"))
-            # self.ws.cell(row=row, column=13, value=meta.get("resolutions"))
-            # self.ws.cell(row=row, column=14, value=meta.get("start_frame"))
-            # self.ws.cell(row=row, column=15, value=meta.get("and_frame"))
-            # self.ws.cell(row=row, column=16, value=meta.get("duration"))
+            self.ws.cell(row=row, column=8, value=meta.get("scan_path"))
+            self.ws.cell(row=row, column=9, value=meta.get("scan_name"))
+            self.ws.cell(row=row, column=10, value=meta.get("clip_name"))
+            self.ws.cell(row=row, column=11, value=meta.get("pad"))
+            self.ws.cell(row=row, column=12, value=meta.get("ext"))
+            self.ws.cell(row=row, column=13, value=meta.get("resolutions"))
+            self.ws.cell(row=row, column=14, value=meta.get("start_frame"))
+            self.ws.cell(row=row, column=15, value=meta.get("and_frame"))
+            self.ws.cell(row=row, column=16, value=meta.get("duration"))
 
-            # self.ws.cell(row=row, column=20, value=meta.get("timecode_in"))
-            # self.ws.cell(row=row, column=21, value=meta.get("timecode_out"))
+            self.ws.cell(row=row, column=20, value=meta.get("timecode_in"))
+            self.ws.cell(row=row, column=21, value=meta.get("timecode_out"))
 
-            # self.ws.cell(row=row, column=24, value=meta.get("framerate"))
-            # self.ws.cell(row=row, column=25, value=meta.get("date"))
+            self.ws.cell(row=row, column=24, value=meta.get("framerate"))
+            self.ws.cell(row=row, column=25, value=meta.get("date"))
 
         #### test #####
-        for meta in self.exr_meta_list:
-            self.ws.append(  
-            {
-                'H': meta.get("scan_path"),
-                'I': meta.get("scan_name"),
-                'J': meta.get("clip_name"),
-                'K': meta.get("pad"),
-                'L': meta.get("ext"),
-                'M': meta.get("resolutions"),
-                'N': meta.get("start_frame"),
-                'O': meta.get("and_frame"),
-                'P': meta.get("duration"),
-                'T': meta.get("timecode_in"),
-                'U': meta.get("timecode_out"),
-                'X': meta.get("framerate"),
-                'Y': meta.get("date")
-                })
+        # for row, meta in enumerate(self.exr_meta_list, start=2):
+        #     print(row)
+        #     self.ws.append(
+        #     {
+        #         'H': meta.get("scan_path"),
+        #         'I': meta.get("scan_name"),
+        #         'J': meta.get("clip_name"),
+        #         'K': meta.get("pad"),
+        #         'L': meta.get("ext"),
+        #         'M': meta.get("resolutions"),
+        #         'N': meta.get("start_frame"),
+        #         'O': meta.get("and_frame"),
+        #         'P': meta.get("duration"),
+        #         'T': meta.get("timecode_in"),
+        #         'U': meta.get("timecode_out"),
+        #         'X': meta.get("framerate"),
+        #         'Y': meta.get("date")
+        #         })
 
         self.excel_save()
 
     def excel_save(self):
         excel_path = os.path.join(self.project_path[0], 'production/excel')
         # name = self.project_path[1] + '.csv'
-        name = self.project_path[1] + '.xlsx'
+        name = f'{self.project_path[1]}.xlsx'
         save_dir_path = os.path.join(excel_path, name)
 
         count = 1
@@ -226,7 +230,7 @@ class ExcelCreater:
             new_name = f'{self.project_path[1]}_{count}.xlsx'
             save_dir_path = os.path.join(excel_path, new_name)
             count += 1
-        
+
         self.wb.save(save_dir_path)
 
 

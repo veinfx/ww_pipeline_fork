@@ -22,7 +22,7 @@ class ExcelCreater:
         self.ws.title = 'Shot'
 
         self._input_path = None
-        self._output_path = None
+        # self._output_path = None
 
         self.files_dict = {}
 
@@ -37,8 +37,6 @@ class ExcelCreater:
 
         self.img_file_list = []
 
-        self.project_path = self.input_path.split('/production/scan')
-
     @property
     def input_path(self):
         return self._input_path
@@ -49,13 +47,13 @@ class ExcelCreater:
             raise ValueError("Input path is missing.")
         self._input_path = value
 
-    @property
-    def output_path(self):
-        return self._output_path
-
-    @output_path.setter
-    def output_path(self, value):
-        self._output_path = value
+    # @property
+    # def output_path(self):
+    #     return self._output_path
+    #
+    # @output_path.setter
+    # def output_path(self, value):
+    #     self._output_path = value
 
     def get_all_files(self):
         self.files_dict = {}
@@ -65,7 +63,6 @@ class ExcelCreater:
                 # print(f"ffff==={files}")
                 files.sort(key=lambda x: int(re.findall(r'\d+', x)[-1]))
                 self.files_dict[root] = files
-                # sorted(self.files_dict.items(), key=lambda item: item[0], reverse=False)
         if len(self.files_dict.values()) == 0:
             raise Exception("No files found in the directory.")
 
@@ -127,9 +124,10 @@ class ExcelCreater:
         # print(f"wvwv===={self.exr_meta_list}")
 
     def get_thumbnail(self):
-        self.thumbnail_path = os.path.join(self.project_path[0], f'tmp/thumb{self.project_path[1]}')
-        if not os.path.exists(self.thumbnail_path):
-            os.makedirs(self.thumbnail_path, exist_ok=True)
+        self.project_path = self.input_path.split('/production/scan/')
+        thumbnail_path = os.path.join(self.project_path[0], f'tmp/thumb/{self.project_path[1]}')
+        if not os.path.exists(thumbnail_path):
+            os.makedirs(thumbnail_path, exist_ok=True)
 
         exr_files_dict = {}
         for path, dirs, files in os.walk(self.input_path):
@@ -140,13 +138,16 @@ class ExcelCreater:
 
         # convert exr to jpg
         for exr_file, file_name in exr_files_dict.items():
-            run(output(input(exr_file), f'{self.thumbnail_path}/{file_name}.jpg'))
+            if not os.path.isfile(f'{thumbnail_path}/{file_name}.jpg'):
+                run(output(input(exr_file), f'{thumbnail_path}/{file_name}.jpg'))
+
+        return thumbnail_path
 
     def insert_thumbnail(self):
         # 함수 이름 변경
-        thumbnail_lists = os.listdir(self.thumbnail_path)
+        thumbnail_lists = os.listdir(self.get_thumbnail())
         for i, thumbnail_list in enumerate(thumbnail_lists):
-            image = Image(os.path.join(self.thumbnail_path, thumbnail_list))
+            image = Image(os.path.join(self.get_thumbnail(), thumbnail_list))
             image.width = 250
             image.height = 150
             col_width = image.width * 50 / 350   ## 엑셀 셀 폭 높이 단위
@@ -242,7 +243,7 @@ class ExcelCreater:
     def excel_create(self):
       
         self.execl_form()
-        self.get_thumbnail()
+        # self.get_thumbnail()
         self.insert_thumbnail()
         # self.thumbnail_data()
         self.get_meta()
@@ -286,7 +287,7 @@ class ExcelCreater:
     def excel_save(self):
         excel_path = os.path.join(self.project_path[0], 'production/excel')
         # name = self.project_path[1] + '.csv'
-        name = self.project_path[1] + '.xlsx'
+        name = f'{self.project_path[1]}.xlsx'
         save_dir_path = os.path.join(excel_path, name)
 
         count = 1
@@ -295,8 +296,9 @@ class ExcelCreater:
             new_name = f'{self.project_path[1]}_{count}.xlsx'
             save_dir_path = os.path.join(excel_path, new_name)
             count += 1
-        
+
         self.wb.save(save_dir_path)
+
 
 def main():
     ec = ExcelCreater()
