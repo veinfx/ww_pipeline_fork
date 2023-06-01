@@ -1,5 +1,6 @@
 import sys
 
+# import OpenEXR
 from PySide2.QtWidgets import *
 from PySide2 import QtGui
 
@@ -9,6 +10,7 @@ class CreateExcelView(QWidget):
     def __init__(self):
         super().__init__()
         self.setup_ui()
+        # OpenEXR.InputFile('/TD/show/hanjin/production/scan/20221017_plate_scan/001_C140C022_220304_WOFX/C140C022_220304_WOFX.0001001.exr')
 
     def setup_ui(self):
         self.setWindowTitle("Create Excel File")
@@ -61,7 +63,7 @@ class CreateExcelView(QWidget):
         print("Save Excel File")
 
     def cancel_test(self):
-        print("Close")
+        print("Clear")
 
 
 if __name__ == '__main__':
