@@ -1,9 +1,8 @@
 import sys
-
-from PySide2 import QtWidgets
-from PySide2.QtWidgets import QApplication
-
 from excel_create import ExcelCreate
+
+from PySide2.QtWidgets import *
+
 from ui import CreateExcelView
 
 
@@ -18,8 +17,11 @@ class CreateExcelController(CreateExcelView):
         self.btn_cancel.clicked.connect(self.btn_cancel_clicked)
 
     def btn_browse_clicked(self):
-        # self.dir_path = QtWidgets.QFileDialog.getExistingDirectory()
-        self.line_path.setText(self.dir_path)
+        dialog = QFileDialog()
+        dialog.setDirectory('/TD/show')
+        dir_path = dialog.getExistingDirectory()
+        self.line_path.setText(dir_path)
+        self.model.input_path = dir_path
 
     def btn_create_clicked(self):
         # self.model
