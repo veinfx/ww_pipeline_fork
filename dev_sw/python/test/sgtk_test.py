@@ -2,7 +2,7 @@
 import os
 import sys
 
-import fileseq_tt
+import fileseq
 import shutil
 import shotgun_api3
 import PySide2
@@ -53,4 +53,4 @@ print(user_project[0]['id'])
 # # ShotGrid 폴더 생성
 # folder = sg.create('Folder', {'name': '새로운 폴더 이름', 'project': {'type': 'Project', 'id': 프로젝트_ID}})
 
-fs = fileseq.F
+fs = fileseq
