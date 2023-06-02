@@ -15,4 +15,3 @@ metadata = exr_data.meta
 print("Metadata:")
 for key, value in metadata.items():
     print(f"{key}: {value}")
-
