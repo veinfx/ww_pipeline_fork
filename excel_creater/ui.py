@@ -1,6 +1,5 @@
 import sys
 
-# import OpenEXR
 from PySide2.QtWidgets import *
 from PySide2 import QtGui
 
@@ -10,7 +9,6 @@ class CreateExcelView(QWidget):
     def __init__(self):
         super().__init__()
         self.setup_ui()
-        # OpenEXR.InputFile('/TD/show/hanjin/production/scan/20221017_plate_scan/001_C140C022_220304_WOFX/C140C022_220304_WOFX.0001001.exr')
 
     def setup_ui(self):
         self.setWindowTitle("Create Excel File")
@@ -22,19 +20,27 @@ class CreateExcelView(QWidget):
 
         hbtop = QHBoxLayout()
         vb.addLayout(hbtop)
-        self.line_path = QLineEdit()
+        self.line_dir_path = QLineEdit()
         self.btn_browse = QPushButton("Browse")
-        self.btn_cancel = QPushButton("Clear")
-        self.btn_cancel.setMaximumSize(60, 23)
-        hbtop.addWidget(self.line_path)
+        self.btn_clear = QPushButton("Clear")
+        self.btn_clear.setMaximumSize(60, 23)
+        hbtop.addWidget(self.line_dir_path)
         hbtop.addWidget(self.btn_browse)
-        hbtop.addWidget(self.btn_cancel)
+        hbtop.addWidget(self.btn_clear)
+
+        hbmid = QHBoxLayout()
+        vb.addLayout(hbmid)
+        self.label_save_path = QLabel("Save Directory")
+        hbmid.addWidget(self.label_save_path)
 
         hbbot = QHBoxLayout()
         vb.addLayout(hbbot)
         self.btn_create = QPushButton("Create")
         self.btn_create.setMaximumSize(200, 30)
+        self.btn_cancel = QPushButton("Cancel")
+        self.btn_cancel.setMaximumSize(200, 30)
         hbbot.addWidget(self.btn_create)
+        hbbot.addWidget(self.btn_cancel)
 
         self.setLayout(vb)
 
@@ -43,6 +49,7 @@ class CreateExcelView(QWidget):
 
         # button clicked event example
         self.btn_browse.clicked.connect(self.browse_test)
+        self.btn_clear.clicked.connect(self.clear_test)
         self.btn_create.clicked.connect(self.create_test)
         self.btn_cancel.clicked.connect(self.cancel_test)
 
@@ -55,18 +62,21 @@ class CreateExcelView(QWidget):
         self.move(fg.topLeft())
 
     def message_box(self):
-        msgbox = QMessageBox()
-        msgbox.about(self, "Alert", "Complete")
+        msgbox = QMessageBox(self)
+        msgbox.about(self, "Successful", "Save Complete!")
 
     def browse_test(self):
         print("Select a directory")
+
+    def clear_test(self):
+        print("Clear the directory")
 
     def create_test(self):
         # self.message_box()
         print("Save Excel File")
 
     def cancel_test(self):
-        print("Clear")
+        print("Close widget")
 
 
 if __name__ == '__main__':
