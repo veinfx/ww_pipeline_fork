@@ -37,3 +37,5 @@ for item in seqs:
 for item in seqs:
     a = ''.join([item.dirname(), item.basename(), '%0{}d'.format(len(str(item.end()))), item.extension()])
     print(11, a)
+    print(str(item.end()))
+

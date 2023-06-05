@@ -1,5 +1,6 @@
 import OpenEXR
 
+
 # EXR 파일 경로
 exr_file_path = "/show/seine/production/scan/20221017_plate_scan/002_A130C005_220226_RPGF/A130C005_220226_RPGF.0001014.exr"
 

@@ -50,7 +50,7 @@ class SgMapping:
         seq_list_dict = sorted(list(set([sequence["code"] for sequence in sequences])))
         return seq_list_dict
 
-    def get_shot_list(self,user_project, user_seq):
+    def get_shot_list(self, user_project, user_seq):
         """
         프로젝트의 shot을 구하는 함수이다.
         """
@@ -74,3 +74,13 @@ class SgMapping:
 
         shot_list_dict = sorted(list(set([shots["code"] for shots in shots])))
         return shot_list_dict
+
+
+def main():
+    sg = SgMapping()
+    get_proj = sg.get_active_project()
+    print(get_proj)
+
+
+if __name__ == "__main__":
+    main()
