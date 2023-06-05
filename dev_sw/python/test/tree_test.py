@@ -71,9 +71,6 @@ def create_shot():
     shot_dict = sg.create("Shot", shot_data)
     print(shot_dict)
 
-
-
-
 def get_all_project():
     """all project"""
     projects = sg.find("Project", [], ["name"])
