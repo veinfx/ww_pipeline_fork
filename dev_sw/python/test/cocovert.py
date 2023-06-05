@@ -1,6 +1,6 @@
 # :coding: utf-8
 
-from dev_sw.python.ui.sg_mp import SgMapping
+from dev_sw.python.ui.sg_mapping import SgMapping
 
 project = 'seine'
 sg = SgMapping()

@@ -1,56 +1,33 @@
-# -*- coding:utf-8 -*-
+import sgtk
 import os
-import sys
 
-import fileseq
-import shutil
-import shotgun_api3
-import PySide2
-import ffmpeg
-import openpyxl
+# Get the engine instance that is currently running.
+current_engine = sgtk.platform.current_engine()
 
-SERVER_PATH = "https://rndtest.shotgrid.autodesk.com"
-SCRIPT_NAME = "pipeline_sw"
-SCRIPT_KEY = "gvvsnbqrnckmmf3zhw?tqbDib"
+# Grab the pre-created Sgtk instance from the current engine.
+tk = current_engine.sgtk
 
-sg = shotgun_api3.Shotgun(SERVER_PATH,
-                          script_name=SCRIPT_NAME, api_key=SCRIPT_KEY)
+# Get a context object from a Task. This Task must belong to a Shot for the future steps to work.
+context = tk.context_from_entity("Task", 13155)
 
+# Create the required folders based upon the task.
+tk.create_filesystem_structure("Task", context.task["id"])
 
-def get_active_project():
-    projects = sg.find("Project", [["sg_status", "is", "Active"]], ["name"])
-    project_dict = sorted(list(set([project["name"] for project in projects])))
-    print(project_dict)
+# Get a template instance by providing a name of a valid template in your config's templates.yml.
+template = tk.templates["maya_shot_publish"]
 
+# Use the context to resolve as many of the template fields as possible.
+fields = context.as_template_fields(template)
 
-project_name = "seine"
+# Manually resolve the remaining fields that can't be figured out automatically from context.
+fields["name"] = "myscene"
+fields["version"] = 1
 
-user_project = sg.find("Project", [["name", "is", project_name]], [])
+# Use the fields to resolve the template path into an absolute path.
+publish_path = template.apply_fields(fields)
 
-print(user_project)
-# for dict in user_project:
-#     user_project.extend(dict)
-#     print(user_project[0])
+# Make sure we create any missing folders.
+current_engine.ensure_folder_exists(os.path.dirname(publish_path))
 
-
-filters = [["project", "is", user_project]]
-
-fields = ["id", "code"]
-shot_list = sg.find("Shot", filters, fields)
-
-print(shot_list)
-
-print(user_project[0]['id'])
-
-# import sgtk
-#
-# # 프로젝트 설정 파일 경로
-# config_path = '/path/to/your/shotgun.yml'
-#
-# # 프로젝트 생성
-# sg = sgtk.Shotgun.from_config_location(config_path)
-#
-# # ShotGrid 폴더 생성
-# folder = sg.create('Folder', {'name': '새로운 폴더 이름', 'project': {'type': 'Project', 'id': 프로젝트_ID}})
-
-fs = fileseq
+# Create an empty file on disk. (optional - should be replaced by actual file save or copy logic)
+sgtk.util.filesystem.touch_file(publish_path)

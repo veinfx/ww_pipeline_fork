@@ -75,11 +75,30 @@ class SgMapping:
         shot_list_dict = sorted(list(set([shots["code"] for shots in shots])))
         return shot_list_dict
 
+    def get_all_shots(self, user_project):
+        project = sg.find_one("Project", [["name", "is", user_project]], ["id"])
+        project_id = project["id"]
+        filters = [["project", "is", {"type": "Project", "id": project_id}]]
+
+        shots = sg.find("Shot", filters, ['code', 'sg_scan_path'])
+        # pprint(shots)
+
+        # shot_list_dict = sorted(list(set([shots["code"] for shots in shots])))
+        return shots
+
+    def shot_update(self):
+        pass
+
 
 def main():
     sg = SgMapping()
     get_proj = sg.get_active_project()
     print(get_proj)
+    user_project = 'seine'
+    shots = sg.get_all_shots(user_project)
+    print(shots)
+    shots_scan_path = sorted(list(set([shot['sg_scan_path'] for shot in shots])))
+    print(0, shots_scan_path)
 
 
 if __name__ == "__main__":

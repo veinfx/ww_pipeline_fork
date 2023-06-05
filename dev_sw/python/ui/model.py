@@ -1,5 +1,9 @@
 from PySide2.QtCore import QStringListModel, Qt
 
+from sg_mapping import SgMapping
+
+sg = SgMapping()
+
 
 class MyModel(QStringListModel):
 
@@ -32,3 +36,18 @@ class MyModel(QStringListModel):
     def flags(self, index):
         """모든 아이템이 선택 가능하고, 편집이 불가능"""
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
+    def org_copy(self, project):
+        sg.get_all_shots(project)
+
+        pass
+
+
+def main():
+    project = 'seine'
+    data = MyModel()
+    shots = data.org_copy(project)
+    print(shots['code'])
+
+if __name__ == '__main__':
+    main()
