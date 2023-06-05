@@ -19,6 +19,7 @@ class ExcelCreate:
         self._input_path = None
         self.thumbnail_path = None
         self.project_path = None
+        self.excel_path = None
 
         self.files_dict = {}
 
@@ -158,14 +159,14 @@ class ExcelCreate:
         self.excel_save()
 
     def excel_save(self):
-        excel_path = os.path.join(self.project_path[0], 'production/excel')
+        self.excel_path = os.path.join(self.project_path[0], 'production/excel')
 
         file_name = f'{self.project_path[1]}.xlsx'
-        save_dir_path = os.path.join(excel_path, file_name)
+        save_dir_path = os.path.join(self.excel_path, file_name)
         count = 1
         while os.path.exists(save_dir_path):
             new_name = f'{self.project_path[1]}_{count}.xlsx'
-            save_dir_path = os.path.join(excel_path, new_name)
+            save_dir_path = os.path.join(self.excel_path, new_name)
             count += 1
 
         self.wb.save(save_dir_path)
