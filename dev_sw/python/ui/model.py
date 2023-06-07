@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from PySide2.QtCore import QStringListModel, Qt
 
 from sg_mapping import SgMapping
@@ -37,17 +40,31 @@ class MyModel(QStringListModel):
         """모든 아이템이 선택 가능하고, 편집이 불가능"""
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-    def org_copy(self, project):
-        sg.get_all_shots(project)
+    def scan_org_copy(self, project):
+        shots = sg.get_all_shots(project)
+        shot_codes = []
+        seq_name = []
+        for shot in shots:
+            shot_name = shot['code']
+            shot_codes.append(shot_name)
+            seq_name = shot['sg_sequence']['name']
+            org_path = f'/show/{project}/seq/{seq_name}/{shot_name}/plate/org/'
+            # print(org_path)
+        # shots_scan_path = sorted(list(set([shot['sg_scan_path'] for shot in shots])))
+        # print(0, shots_scan_path)
+        # a = os.listdir(shots_scan_path[0])
+        # print(a)
+        # for ai in a:
+        #     print(ai)
 
-        pass
+        return seq_name, shot_codes
 
 
-def main():
-    project = 'seine'
-    data = MyModel()
-    shots = data.org_copy(project)
-    print(shots['code'])
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     project = 'seine'
+#     data = MyModel()
+#     data.scan_org_copy(project)
+#
+#
+# if __name__ == '__main__':
+#     main()

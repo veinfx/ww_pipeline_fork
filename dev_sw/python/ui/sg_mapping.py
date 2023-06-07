@@ -29,22 +29,34 @@ class SgMapping:
         project_dict = sorted(list(set([project["name"] for project in projects])))
         return project_dict
 
-    def get_seq_list(self, usr_project):
+    def select_get_project(self, project_name):
         """
-        프로젝트의 sequence를 구하는 함수이다.
         """
-        project = sg.find_one("Project", [["name", "is", usr_project]], ["id"])
-        project_id = project["id"] # project_name : Topgun_psw , id : 139
-        filters = [["project", "is", {"type": "Project", "id": project_id}]]
-        sequences = sg.find("Sequence", filters, ["code"])
+        user_project = sg.find("Project", [["name", "is", project_name]], [])
+
+        for dict in user_project:
+            user_project.extend(dict)
+            return user_project[0]
+
+    def select_get_seq(self, seq_name, shot_name):
+        user_seq = sg.find("Sequence", [["code", "is", seq_name]], [])
+        user_shot = sg.find("Shot", [["code", "is", shot_name]], [])
+        # print(1,user_seq)
+
+        for dict in user_seq, user_shot:
+            user_seq.extend(dict)
+            user_shot.extend(dict)
+            return user_seq[0], user_shot[0]
 
     def get_seq_list(self, user_project):
         """
         프로젝트의 sequence를 구하는 함수이다.
         """
         project = sg.find_one("Project", [["name", "is", user_project]], ["id"])
-        project_id = project["id"] # project_name : Topgun_psw , id : 139
+        # print(project)
+        project_id = project["id"]
         filters = [["project", "is", {"type": "Project", "id": project_id}]]
+
         sequences = sg.find("Sequence", filters, ["code"])
 
         seq_list_dict = sorted(list(set([sequence["code"] for sequence in sequences])))
@@ -80,7 +92,7 @@ class SgMapping:
         project_id = project["id"]
         filters = [["project", "is", {"type": "Project", "id": project_id}]]
 
-        shots = sg.find("Shot", filters, ['code', 'sg_scan_path'])
+        shots = sg.find("Shot", filters, ['code', 'sg_scan_path', 'sg_sequence'])
         # pprint(shots)
 
         # shot_list_dict = sorted(list(set([shots["code"] for shots in shots])))
@@ -93,12 +105,15 @@ class SgMapping:
 def main():
     sg = SgMapping()
     get_proj = sg.get_active_project()
-    print(get_proj)
+    # print(get_proj)
     user_project = 'seine'
     shots = sg.get_all_shots(user_project)
     print(shots)
     shots_scan_path = sorted(list(set([shot['sg_scan_path'] for shot in shots])))
-    print(0, shots_scan_path)
+    # print(0, shots_scan_path)
+    a = sg.get_seq_list(user_project)
+    # print(a)
+
 
 
 if __name__ == "__main__":

@@ -20,20 +20,36 @@ class MyView(QWidget):
         self.project_combo_view = QComboBox()
         layout.addWidget(self.project_combo_view)
 
-        btn_laout = QHBoxLayout()
-        self.copy_btn = QPushButton('Copy')
-        btn_laout.addWidget(self.copy_btn)
+        # seq_label = QLabel('seq')
+        # layout.addWidget(seq_label)
+        # self.seq_combo_view = QComboBox()
+        # layout.addWidget(self.seq_combo_view)
+
+        shot_label = QLabel('shots')
+        layout.addWidget(shot_label)
+        self.shot_view = QTreeView()
+
+        layout.addWidget(self.shot_view)
+
+        copy_path_label = QLabel('scan-org copy path')
+        layout.addWidget(copy_path_label)
+        self.copy_path_view = QLineEdit()
+        layout.addWidget(self.copy_path_view)
+
+        btn_layout = QHBoxLayout()
+        self.copy_btn = QPushButton('scan-org Copy')
+        btn_layout.addWidget(self.copy_btn)
         self.copy_btn.clicked.connect(self.pressed_copy)
 
         self.convert_btn = QPushButton('Convert')
-        btn_laout.addWidget( self.convert_btn)
+        btn_layout.addWidget( self.convert_btn)
         self.convert_btn.clicked.connect(self.pressed_convert)
 
         self.close_btn = QPushButton('close')
-        btn_laout.addWidget(self.close_btn)
+        btn_layout.addWidget(self.close_btn)
         self.close_btn.clicked.connect(self.pressed_close)
 
-        layout.addLayout(btn_laout)
+        layout.addLayout(btn_layout)
 
 
         # seq_combo_view = QComboBox()
