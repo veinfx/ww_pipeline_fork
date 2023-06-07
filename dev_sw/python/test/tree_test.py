@@ -44,6 +44,7 @@ def make_dirs():
         pass
         # os.makedirs(project_path + "/" + item)
 
+
 def create_project():
     # project_data = {"name": usr_project_name, "sg_description": "This is a new project."}
     project = sg.create("Project", project_data)
@@ -70,6 +71,7 @@ def create_shot():
     # shot_data = {"code": usr_shot_name, "sg_sequence" : usr_seq_name, "Project": ["name", "is", usr_project_name]}
     shot_dict = sg.create("Shot", shot_data)
     print(shot_dict)
+
 
 def get_all_project():
     """all project"""
