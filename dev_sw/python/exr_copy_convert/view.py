@@ -11,7 +11,7 @@ class MyView(QWidget):
         super().__init__()
         self.setWindowTitle('SG CO CO')
         self.move(550, 300)
-        # self.resize(300, 250)
+        self.resize(400, 300)
 
         # set layout
         layout = QVBoxLayout()
@@ -27,17 +27,17 @@ class MyView(QWidget):
 
         shot_label = QLabel('shots')
         layout.addWidget(shot_label)
-        self.shot_view = QTreeView()
+        self.shot_view = QListView()
 
         layout.addWidget(self.shot_view)
 
-        copy_path_label = QLabel('scan-org copy path')
+        copy_path_label = QLabel('scan > org copy path')
         layout.addWidget(copy_path_label)
         self.copy_path_view = QLineEdit()
         layout.addWidget(self.copy_path_view)
 
         btn_layout = QHBoxLayout()
-        self.copy_btn = QPushButton('scan-org Copy')
+        self.copy_btn = QPushButton('scan > org Copy')
         btn_layout.addWidget(self.copy_btn)
         self.copy_btn.clicked.connect(self.pressed_copy)
 

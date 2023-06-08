@@ -21,7 +21,7 @@ print(seqs)
 # print(seq)
 for item in seqs:
     print(1, dir(item))
-    break
+    print(item.basename())
 
 for item in seqs:
     print(item.frameRange())

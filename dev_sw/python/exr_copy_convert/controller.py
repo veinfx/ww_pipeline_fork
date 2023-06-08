@@ -3,7 +3,6 @@
 
 import os
 import sys
-from collections import deque
 
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
@@ -37,13 +36,18 @@ class MyController:
         # self._seq_combo_view = self.view.seq_combo_view
         # self._seq_combo_view.setModel(self._seq_combo_model)
 
-        self._shot_model = QStandardItemModel()
+        self._shot_model = MyModel()
         # self._shot_model.setHorizontalHeaderItem(['Name', 'Height', 'Weight'])
 
         self._shot_view = self.view.shot_view
-        self._shot_view.header().setDefaultSectionSize(180)
         self._shot_view.setModel(self._shot_model)
-        self._shot_view.expandAll()
+        # self.importData(data)
+        # self._shot_view.expandAll()
+
+        self._org_path_model = MyModel()
+        self._org_path_view = self.view.copy_path_view
+        completer = QCompleter(self._org_path_model)
+        self._org_path_view.setCompleter(completer)
 
         self.set_project_combobox()
         # self.set_seq_combobox()
@@ -103,13 +107,10 @@ class MyController:
 
         self.set_shots()
 
-    def selected_shot(self, event):
-        pass
-
     def set_shots(self):
         # project = self._project_combo_model
         # print(project)
-        seqs, shots, path = self.model.scan_org_copy(self._project_combo_view.currentText())
+        seqs, shots, _ = self.model.scan_org_copy(self._project_combo_view.currentText())
         # for shot in shots:
         #     shot_name = shot['code']
         #     print(shot_name)
@@ -119,22 +120,21 @@ class MyController:
         #         asset_item.setText(0, i)
         # model = QStringListModel()
         # model.setStringList(items)
-        print(seqs)
+        # print(seqs)
         print(shots)
-        print(path)
-
         # for i in seqs:
         #     seq_item = QTreeView(self._shot_view)
-        #     seq_item.(0, i)
+        #     seq_item.setText(0, i)
+        self._shot_model._data_list.clear()
+        for shot in shots:
+            self._shot_model._data_list.append(shot)
+            self._shot_model.layoutChanged.emit()
 
-            # for shot in shots:
-            #     print(shot)
-
-            # self._shot_model = QStringListModel()
-            # self._shot_model.setStringList(shot)
-            # self._shot_model._data_list.append(shot)
-            # self._shot_view.(shot)
-            # self._shot_model.data.append(shot)
+    def sel_shot_get_copy_path(self):
+        self._org_path_view.clear()
+        _, _, copy_path = self.model.scan_org_copy(self._project_combo_view.currentText())
+        print(copy_path)
+        # self._org_path_view.setText(copy_path)
 
     def set_org_copy(self):
         self.model.scan_org_copy()
@@ -153,7 +153,6 @@ class MyController:
 
 
 def main():
-
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
     controller = MyController()

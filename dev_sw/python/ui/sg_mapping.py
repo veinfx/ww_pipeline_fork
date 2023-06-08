@@ -1,13 +1,5 @@
 # -*- coding:utf-8 -*-
-import os
-import sys
-
-import fileseq
-import shutil
 import shotgun_api3
-import PySide2
-import ffmpeg
-import openpyxl
 
 SERVER_PATH = "https://rndtest.shotgrid.autodesk.com"
 SCRIPT_NAME = "pipeline_sw"

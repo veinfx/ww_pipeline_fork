@@ -32,10 +32,10 @@ class MyView(QWidget):
 
         layout.addWidget(self.shot_view)
 
-        copy_path_label = QLabel('scan > org copy path')
-        layout.addWidget(copy_path_label)
-        self.copy_path_view = QLineEdit()
-        layout.addWidget(self.copy_path_view)
+        # copy_path_label = QLabel('scan > org copy path')
+        # layout.addWidget(copy_path_label)
+        # self.copy_path_view = QLineEdit()
+        # layout.addWidget(self.copy_path_view)
 
         btn_layout = QHBoxLayout()
         self.copy_btn = QPushButton('scan > org Copy')

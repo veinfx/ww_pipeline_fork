@@ -63,3 +63,30 @@ class MyModel(QStringListModel):
 
     def get_shot_path(self):
         pass
+
+    def copy_rename(self):
+        # Source directories - relative or absolute paths.
+        source = "./src/"
+        destination = "./dest/"
+
+        # A list of all files in the source directory
+        files_in_src = os.listdir(source)
+
+        # Iterate over all files on the source and copy them to the destination.
+        for file in files_in_src:
+            # for example, file = exclude.txt
+            # os.path.join joins the source directory to the file to get a valid source path
+            # , e.g./home/kiprono/Desktop/src/exclude.txt
+            src_file = os.path.join(source, file)
+            # splitext() splits the basename and extension from the filename
+            # , eg exclude.txt becomes (exclude, .txt)
+            filename, extension = os.path.splitext(file)
+            # Create a new filename with the string "_copy" added to it
+            new_file = f"{filename}_copy{extension}"
+            # Join the destination folder with the new filename
+            dest_file = os.path.join(destination, new_file)
+            # If the destination file already exists, skip it
+            if os.path.exists(dest_file):
+                continue
+            # Copy the source file to the destination folder with the new filename
+            shutil.copy(src_file, dest_file)
