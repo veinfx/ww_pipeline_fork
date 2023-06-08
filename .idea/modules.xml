@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-<<<<<<< HEAD
-      <module fileurl="file://$PROJECT_DIR$/.idea/Shotgrid-pipline.iml" filepath="$PROJECT_DIR$/.idea/Shotgrid-pipline.iml" />
-=======
->>>>>>> 7b0aa47f5a31918995e1bc024f87512d15b696b1
+      <module fileurl="file://$PROJECT_DIR$/.idea/ww_pipeline_fork.iml" filepath="$PROJECT_DIR$/.idea/ww_pipeline_fork.iml" />
     </modules>
   </component>
 </project>
